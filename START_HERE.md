@@ -7,7 +7,7 @@
    pnpm typecheck && pnpm test && pnpm test:rls
    pnpm build && pnpm test:e2e
    ```
-3. Run it: `cp .env.example .env.local` (optional in dev), `pnpm dev`, then `pnpm worker` in a second terminal. Open http://localhost:3000, click **Sign in** and pick a demo identity.
+3. Run it: `bash scripts/setup-local.sh` (installs, builds, starts web + worker). Or manually: `pnpm dev`, then `pnpm worker` in a second terminal. Open http://localhost:3000, click **Sign in** and pick a demo identity.
 4. Development agents live in `.claude/agents/`; runtime (in-app) agents are documented in `runtime_agents/`. Kick-off prompt for a new Claude Code session: `prompts/START_IN_CLAUDE_CODE.md`.
 
 ## What runs today (demo mode)
