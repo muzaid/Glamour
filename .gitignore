@@ -1,0 +1,11 @@
+node_modules/
+.next/
+.env
+.env.local
+*.log
+.var/
+test-results/
+playwright-report/
+apps/web/public/mediapipe/
+apps/web/.render-output/
+.tmp-pg/

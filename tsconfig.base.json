@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "@glamotion/contracts": ["packages/contracts/src/index.ts"],
+      "@glamotion/core": ["packages/core/src/index.ts"],
+      "@glamotion/tryon": ["packages/tryon/src/index.ts"],
+      "@glamotion/motion": ["packages/motion/src/index.ts"],
+      "@glamotion/agents": ["packages/agents/src/index.ts"],
+      "@glamotion/integrations": ["packages/integrations/src/index.ts"],
+      "@glamotion/ui": ["packages/ui/src/index.ts"]
+    }
+  }
+}

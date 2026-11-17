@@ -1,0 +1,25 @@
+{
+  "name": "glamotion",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.28.0",
+  "engines": { "node": ">=20.11" },
+  "scripts": {
+    "dev": "pnpm --filter @glamotion/web dev",
+    "build": "pnpm --filter @glamotion/web build",
+    "start": "pnpm --filter @glamotion/web start",
+    "typecheck": "tsc -p tsconfig.json --noEmit && pnpm --filter @glamotion/web typecheck",
+    "test": "vitest run",
+    "test:rls": "bash supabase/tests/run-rls-tests.sh",
+    "test:e2e": "playwright test --trace off",
+    "worker": "pnpm --filter @glamotion/worker start"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@types/node": "22.15.30",
+    "@types/pg": "8.15.4",
+    "pg": "8.16.3",
+    "typescript": "5.9.3",
+    "vitest": "3.2.4"
+  }
+}

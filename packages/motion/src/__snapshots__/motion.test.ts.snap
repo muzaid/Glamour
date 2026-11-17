@@ -1,0 +1,3 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`presets > frame snapshot is stable 1`] = `"<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920"><rect width="1080" height="1920" fill="#101016"/><defs><filter id="b-swipe-0-0" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="0.35"/></filter></defs><g data-el="stroke-1" opacity="1.0000" filter="url(#b-swipe-0-0)" transform="translate(509.52 960.00) rotate(0.000) scale(1.0000) translate(-388.80 -86.40)"><rect width="777.5999999999999" height="172.8" rx="86.4" fill="#9E4B5A"/></g></svg>"`;
