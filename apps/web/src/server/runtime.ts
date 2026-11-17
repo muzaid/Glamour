@@ -1,5 +1,6 @@
 import "server-only";
 import path from "node:path";
+import os from "node:os";
 import { randomUUID } from "node:crypto";
 import { cookies, headers } from "next/headers";
 import { DEFAULT_CONFIG, MemoryStore, seedDemo, type AppConfig, type Ctx } from "@glamotion/core";
@@ -36,7 +37,8 @@ export function runtime(): Runtime {
       store: seedDemo(new MemoryStore()),
       config: { ...DEFAULT_CONFIG, checkoutMode: (process.env.CHECKOUT_MODE as AppConfig["checkoutMode"]) ?? "sandbox" },
       payments: new SandboxPaymentProvider(secret("PAYMENT_WEBHOOK_SECRET")),
-      media: new LocalMediaStorage(path.resolve(process.cwd(), ".var/media"), secret("MEDIA_SIGNING_SECRET")),
+      // Serverless hosts (e.g. Vercel) only allow writes under the OS temp dir.
+      media: new LocalMediaStorage(process.env.VERCEL ? path.join(os.tmpdir(), "glamotion-media") : path.resolve(process.cwd(), ".var/media"), secret("MEDIA_SIGNING_SECRET")),
       llm,
     };
   }
