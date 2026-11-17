@@ -9,3 +9,4 @@ playwright-report/
 apps/web/public/mediapipe/
 apps/web/.render-output/
 .tmp-pg/
+*.tsbuildinfo
