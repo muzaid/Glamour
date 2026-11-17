@@ -79,6 +79,12 @@ describe("WF-01 product-to-campaign", () => {
     expect(store.renderJobs.size).toBe(0);
   });
 
+  it("single-locale campaigns validate (partial locale map)", async () => {
+    const { workflow } = await startProductCampaign(as("lena"), { llm }, L, { ...input(), locales: ["en"] });
+    await decideWorkflowGate(as("lena"), { llm }, workflow.id, { gateId: "gate:select_direction", decision: "approve", selection: "quiet-luxury" });
+    expect(getWorkflowView(as("lena"), workflow.id).pendingGate).toBe("gate:approve_output");
+  });
+
   it("token budget stops the workflow", async () => {
     const { workflow } = await startProductCampaign(as("lena"), { llm, dailyTokenQuota: 1 }, L, input());
     expect(workflow.status).toBe("failed");

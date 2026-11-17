@@ -1,0 +1,46 @@
+openapi: 3.1.0
+info: { title: GLAMOTION API, version: "1.0.0", description: "Outline. Request/response bodies are defined by Zod schemas in packages/contracts (authoritative). All errors use ApiError." }
+servers: [{ url: /api/v1 }]
+components:
+  securitySchemes:
+    session: { type: apiKey, in: cookie, name: gm_session }
+    worker: { type: http, scheme: bearer }
+  parameters:
+    IdempotencyKey: { name: Idempotency-Key, in: header, required: true, schema: { type: string, pattern: "^[A-Za-z0-9_-]{8,128}$" } }
+  schemas:
+    ApiError:
+      type: object
+      properties:
+        error: { type: object, required: [code, message, requestId], properties: { code: { type: string }, message: { type: string }, requestId: { type: string }, details: { type: object } } }
+paths:
+  /products: { get: { summary: Published/searchable products, parameters: [{ name: category, in: query, schema: { type: string } }, { name: q, in: query, schema: { type: string } }] } }
+  /products/{id}: { get: { summary: Public PDP incl. variants (id or slug) } }
+  /orgs/{orgId}/products: { get: { summary: Org catalog, security: [{ session: [] }] }, post: { summary: Create draft product (CreateProductInput), security: [{ session: [] }] } }
+  /orgs/{orgId}/products/{id}: { patch: { summary: "Transition status / adjust price / adjust stock", security: [{ session: [] }] } }
+  /orgs/{orgId}/products/{id}/variants: { post: { summary: Add shade variant (CreateVariantInput), security: [{ session: [] }] } }
+  /tryon/sessions: { post: { summary: Initialise ephemeral try-on metadata (no image) } }
+  /looks: { get: { summary: My looks }, post: { summary: Persist opted-in look recipe (SaveLookInput) } }
+  /looks/{id}: { delete: { summary: Remove owner look } }
+  /cart: { get: { summary: Server-priced cart } }
+  /cart/items: { post: { summary: Server-verified variant cart add (AddCartItemInput) } }
+  /cart/items/{id}: { delete: { summary: Remove cart line } }
+  /checkout: { post: { summary: Create checkout session from cart (CheckoutInput), parameters: [{ $ref: "#/components/parameters/IdempotencyKey" }], responses: { "201": { description: Created }, "409": { description: PRICE_CHANGED / OUT_OF_STOCK }, "422": { description: IDEMPOTENCY_REPLAY_MISMATCH } } } }
+  /webhooks/payments: { post: { summary: "Verify provider signature (x-sandbox-signature); dedupe event id" } }
+  /orders/{id}: { get: { summary: My order with immutable line snapshots } }
+  /orgs/{orgId}/projects: { get: { summary: Projects }, post: { summary: Create agency project from brief (BriefInput) } }
+  /orgs/{orgId}/compositions: { post: { summary: Create composition from product + preset } }
+  /orgs/{orgId}/compositions/{id}: { get: { summary: Head revision }, put: { summary: "Save new revision (SaveCompositionInput); 409 on stale baseRevision" } }
+  /projects/{id}/reviews: { post: { summary: Request client review (returns one-time scoped link) } }
+  /reviews/{token}: { get: { summary: Token-scoped review payload } }
+  /reviews/{token}/comments: { post: { summary: Timestamped comment (CommentInput) } }
+  /reviews/{token}/approvals: { post: { summary: Record authorised approval (ApprovalInput) } }
+  /orgs/{orgId}/campaigns: { get: { summary: Campaigns }, post: { summary: Create campaign draft + start WF-01 (CreateCampaignInput) } }
+  /workflows/{id}: { get: { summary: Workflow view (steps, outputs, pending gate) } }
+  /workflows/{id}/approve: { post: { summary: Resume gated AI workflow (WorkflowApproveInput) } }
+  /renders: { post: { summary: Validate (preflight, quota) and enqueue render (CreateRenderInput), parameters: [{ $ref: "#/components/parameters/IdempotencyKey" }] } }
+  /renders/{id}: { get: { summary: Status and signed result when done } }
+  /renders/{id}/cancel: { post: { summary: Cancel render } }
+  /media/{key}: { get: { summary: "Signed, expiring private media download (exp, sig)" } }
+  /privacy/export: { get: { summary: Export my data } }
+  /privacy/delete: { post: { summary: Delete my looks, face media and carts } }
+  /analytics: { post: { summary: First-party analytics event (AnalyticsEvent) } }

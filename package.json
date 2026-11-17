@@ -3,7 +3,9 @@
   "private": true,
   "version": "0.1.0",
   "packageManager": "pnpm@10.28.0",
-  "engines": { "node": ">=20.11" },
+  "engines": {
+    "node": ">=20.11"
+  },
   "scripts": {
     "dev": "pnpm --filter @glamotion/web dev",
     "build": "pnpm --filter @glamotion/web build",
@@ -19,6 +21,7 @@
     "@types/node": "22.15.30",
     "@types/pg": "8.15.4",
     "pg": "8.16.3",
+    "server-only": "0.0.1",
     "typescript": "5.9.3",
     "vitest": "3.2.4"
   }

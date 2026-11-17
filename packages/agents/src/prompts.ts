@@ -59,7 +59,7 @@ export const AGENTS = {
       caption: z.string().max(300),
       tagline: z.string().max(60),
       hashtags: z.array(z.string().regex(/^#[\p{L}\p{N}_]{1,40}$/u)).max(6),
-      localized: z.record(z.enum(["en", "ar", "he"]), z.object({ tagline: z.string().max(80), caption: z.string().max(300) })),
+      localized: z.partialRecord(z.enum(["en", "ar", "he"]), z.object({ tagline: z.string().max(80), caption: z.string().max(300) })),
     }),
   },
   motion_director: {

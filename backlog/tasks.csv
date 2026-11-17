@@ -1,0 +1,78 @@
+id,epic,priority,title,owner,depends_on,acceptance,status,evidence
+F-001,Foundation,P0,"Monorepo scaffold (pnpm workspaces, strict TS, package boundaries)",solution-architect,,pnpm typecheck passes for all packages and apps,DONE,tsconfig.base.json; pnpm typecheck
+F-002,Foundation,P0,"CI pipeline: typecheck, unit, RLS, build, E2E",devops-release-engineer,F-001,Workflow runs all gates on PR,PARTIAL,Added .github/workflows/ci.yml; not yet run on GitHub
+F-003,Foundation,P0,"Shared Zod contracts for catalog, try-on recipe, motion, workflows, errors, events",solution-architect,F-001,All API inputs parsed with contracts; no any in public contracts,DONE,packages/contracts/src/index.ts
+F-004,Foundation,P0,Semantic design tokens (storefront light + studio charcoal),ux-design-system,F-001,Components use tokens only; reduced-motion honoured,DONE,packages/ui/src/tokens.css
+F-005,Foundation,P0,Supabase Auth with @supabase/ssr cookie sessions replacing demo identity switcher,frontend-engineer,F-006,Server-verified sessions; demo switcher disabled in production,TODO,Demo HMAC session in apps/web/src/server/session.ts is dev/demo only
+F-006,Foundation,P0,SQL migrations 0001_core/0002_rls/0003_jobs,supabase-data-engineer,F-003,Apply cleanly on Postgres 16 with Supabase shim,DONE,pnpm test:rls (applies all migrations)
+F-007,Foundation,P0,Two-tenant RLS attack tests,supabase-data-engineer,F-006,Cross-tenant reads/writes denied; RLS forced on every table; no USING(true),DONE,tests/rls/rls.test.ts (11 passing)
+F-008,Foundation,P0,"Fake/sandbox provider adapters (payments, media, LLM, email)",integrations-engineer,F-003,Local tests need no external keys,PARTIAL,Payments/media/LLM done; EmailProvider port only
+F-009,Foundation,P0,"Fictional demo fixtures (2 orgs, shoppers, products)",supabase-data-engineer,F-006,No real brands/people/photos,DONE,packages/core/src/seed.ts; supabase/seed.sql
+F-010,Foundation,P0,Error model + request ids (no stack/table leakage),solution-architect,F-003,"All routes return {error:{code,message,requestId,details}}",DONE,apps/web/src/server/api.ts
+F-011,Foundation,P0,Postgres-backed repository implementing the Store contract,supabase-data-engineer,"F-006,F-005",Web + worker run against Supabase with RLS via JWT claims,TODO,MemoryStore is the demo backend
+F-012,Foundation,P0,ADRs for open product decisions,solution-architect,,Each open decision has an ADR with a safe default,DONE,docs/DECISIONS.md
+CC-001,Cosmetics & Commerce,P0,"Public catalog list, category filter, search",cosmetics-commerce-engineer,F-003,Only published products of active orgs,DONE,core.test.ts 'public catalog hides drafts'; E2E
+CC-002,Cosmetics & Commerce,P0,"Product detail page with shade rail, stock, try-on CTA, disclaimer",frontend-engineer,CC-001,Disclaimer near purchase CTA; 320px no overflow,DONE,E2E vertical slice + 320px test
+CC-003,Cosmetics & Commerce,P0,Merchant create product → variants → publish,cosmetics-commerce-engineer,F-006,Publish blocked without active variant; unique SKU per org,DONE,"E2E 'merchant creates, stocks and publishes'"
+CC-004,Cosmetics & Commerce,P0,Inventory + movements ledger,cosmetics-commerce-engineer,CC-003,Stock cannot go below reserved,DONE,core.test.ts; inventories CHECK constraint
+CC-005,Cosmetics & Commerce,P0,Server-priced cart,cosmetics-commerce-engineer,CC-001,Client prices ignored; unavailable lines flagged,DONE,core.test.ts 'cart uses server prices'
+CC-006,Cosmetics & Commerce,P0,Atomic inventory reservation,cosmetics-commerce-engineer,CC-004,Concurrent checkouts cannot oversell,DONE,core.test.ts race test; app.reserve_inventory() RLS test
+CC-007,Cosmetics & Commerce,P0,Checkout with Idempotency-Key and stale-price rejection,cosmetics-commerce-engineer,CC-005,Same key → same order; different payload → 422; price change → 409,DONE,core.test.ts commerce invariants
+CC-008,Cosmetics & Commerce,P0,Signed payment webhooks with event de-duplication,integrations-engineer,CC-007,Bad/old signatures rejected; duplicate events no-op; amount mismatch rejected,DONE,core.test.ts; E2E forged webhook → 400
+CC-009,Cosmetics & Commerce,P0,Immutable order snapshots + status ledger,cosmetics-commerce-engineer,CC-007,Snapshots unchanged by later price edits; order_items update trigger,DONE,core.test.ts; rls.test.ts
+CC-010,Cosmetics & Commerce,P0,"Market configuration gate (checkout flag, shipping zones, tax rules)",cosmetics-commerce-engineer,CC-007,Live checkout refused until configured,PARTIAL,CHECKOUT_MODE flag done; shipping zones/tax tables TODO
+CC-011,Cosmetics & Commerce,P1,Refunds/returns workflow with business rules and audit,cosmetics-commerce-engineer,CC-008,Human approval; idempotent provider refund,TODO,SandboxPaymentProvider.refund → NOT_IMPLEMENTED
+CC-012,Cosmetics & Commerce,P1,Production payment provider adapter,integrations-engineer,CC-008,Same PaymentProvider port; sandbox → live go/no-go,TODO,Vendor is an open decision (ADR-006)
+CC-013,Cosmetics & Commerce,P2,Marketplace multi-seller settlement,cosmetics-commerce-engineer,CC-012,Per-seller payouts,TODO,
+TO-001,Virtual Try-On,P0,Camera consent gate with on-device disclosure and adult attestation,beauty-tryon-engineer,F-004,Camera requested only on action; consent recorded without media,DONE,TryOnStudio.tsx; E2E consent screenshot
+TO-002,Virtual Try-On,P0,Synthetic illustrated demo face with landmark fixture,beauty-tryon-engineer,,No real person; landmarks generated from same geometry,DONE,packages/tryon/src/demo-face.ts
+TO-003,Virtual Try-On,P0,"Photo upload: type/size limits, EXIF orientation, downscale, local only",beauty-tryon-engineer,TO-001,No upload network traffic,PARTIAL,Implemented; needs rights-cleared real-photo fixtures to E2E test detection
+TO-004,Virtual Try-On,P0,Live camera mode with deterministic cleanup,beauty-tryon-engineer,TO-001,Tracks stop on close/hide/unmount,PARTIAL,Implemented; device matrix (iOS Safari/Android Chrome) not yet run
+TO-005,Virtual Try-On,P0,MediaPipe Face Landmarker integration with self-hosted wasm,beauty-tryon-engineer,TO-003,Single-face policy; model-unavailable fallback,PARTIAL,Wired + fallback; not exercised on real faces in CI
+TO-006,Virtual Try-On,P0,Lip/cheek/eyelid region masks (teeth & eye whites preserved),beauty-tryon-engineer,TO-002,No spill outside regions,DONE,tryon.test.ts geometry tests
+TO-007,Virtual Try-On,P0,Deterministic compositor with finish/opacity/lighting,beauty-tryon-engineer,TO-006,Same inputs → identical pixels; opacity 0 = identity,DONE,tryon.test.ts
+TO-008,Virtual Try-On,P0,"Try-on error states (no face, multiple faces, low light, denied camera, unsupported)",beauty-tryon-engineer,TO-005,Every state has a message and a fallback,DONE,quality.ts; E2E camera-denied fallback
+TO-009,Virtual Try-On,P0,TryOnRecipe v1 save/list/delete (no image),beauty-tryon-engineer,TO-007,Recipe references canonical variant ids,DONE,E2E save look; core looks tests
+TO-010,Virtual Try-On,P1,Foundation shade calibration + head-pose occlusion,beauty-tryon-engineer,TO-007,30-sample rights-cleared calibration set approved,TODO,
+TO-011,Virtual Try-On,P2,Native mobile AR and multi-person modes,beauty-tryon-engineer,TO-010,,TODO,
+AR-001,Agency & Review,P0,Brief intake and projects,agency-workflow-engineer,F-003,Brief stored; claims flagged for client confirmation,DONE,E2E brief → project
+AR-002,Agency & Review,P0,Project state machine,agency-workflow-engineer,AR-001,Invalid transitions rejected server-side,DONE,state.ts; core tests
+AR-003,Agency & Review,P0,"Scoped, expiring, revocable client review links",agency-workflow-engineer,AR-001,Token hashed at rest; cannot enumerate projects,DONE,core tests; rls review_by_token test; E2E
+AR-004,Agency & Review,P0,Timestamped comments anchored to revision/frame,agency-workflow-engineer,AR-003,Comments never mutate source,DONE,E2E client review
+AR-005,Agency & Review,P0,Designated approver decisions with audit,agency-workflow-engineer,AR-003,Comment-only reviewers cannot approve,DONE,core tests
+AR-006,Agency & Review,P0,Delivery record with checksum for approved final render,agency-workflow-engineer,DM-007,Approved revision + final render → delivery,DONE,renders.ts completeRenderJob; E2E
+AR-007,Agency & Review,P1,"Quotes, contracts, milestone billing, time tracking",agency-workflow-engineer,AR-001,Jurisdiction review,TODO,
+DM-001,Design & Motion,P0,"Versioned scene JSON (frames/fps, layers, tracks)",motion-studio-engineer,F-003,Zod-validated; renderer-independent,DONE,contracts MotionComposition
+DM-002,Design & Motion,P0,Frame-accurate interpolation & easings,motion-studio-engineer,DM-001,Monotonic easings; holds outside keyframes,DONE,motion.test.ts
+DM-003,Design & Motion,P0,Eight P0 presets compile to editable keyframes,motion-studio-engineer,DM-002,All presets preflight-clean and deterministic,DONE,motion.test.ts
+DM-004,Design & Motion,P0,"Timeline-lite editor (layers, lanes, scrubber, inspector, undo/redo)",motion-studio-engineer,DM-003,Keyboard shortcuts; mobile preview-only,DONE,MotionEditor.tsx; E2E
+DM-005,Design & Motion,P0,Immutable revisions + baseRevision 409 conflicts,motion-studio-engineer,DM-001,Stale save → 409,DONE,core tests
+DM-006,Design & Motion,P0,"Render preflight: schema, caps, asset allowlist (SSRF), safe-area",motion-studio-engineer,DM-001,URL assets rejected,DONE,motion.test.ts render safety
+DM-007,Design & Motion,P0,"Render worker: claim/lease, heartbeat/cancel, retry backoff, private upload, signed download",motion-studio-engineer,DM-006,Real WebM produced; tampered link 404,DONE,worker.test.ts; E2E final render
+DM-008,Design & Motion,P0,Worker claims from Postgres via app.claim_render_job(),motion-studio-engineer,F-011,SKIP LOCKED exclusivity,PARTIAL,SQL function tested; worker currently claims via internal HTTP API
+DM-009,Design & Motion,P0,Static layered design canvas (design_documents) with templates,motion-studio-engineer,DM-001,"Layer tree, transforms, snapping, export PNG",TODO,Motion editor covers layered scenes; static canvas not built
+DM-010,Design & Motion,P1,Remotion render adapter (licence verified),motion-studio-engineer,DM-007,Same scene JSON renders via Remotion,TODO,ADR-004
+RA-001,Runtime AI & Campaigns,P0,Versioned runtime prompt registry,ai-workflow-engineer,F-003,Every agent has id/version/schema,DONE,packages/agents/src/prompts.ts
+RA-002,Runtime AI & Campaigns,P0,Structured outputs validated before use,ai-workflow-engineer,RA-001,Invalid output never progresses,DONE,agents.test.ts
+RA-003,Runtime AI & Campaigns,P0,WF-01 product→campaign DAG with two human gates,ai-workflow-engineer,RA-002,No render before human approval,DONE,agents.test.ts; E2E
+RA-004,Runtime AI & Campaigns,P0,Bounded retries and needs_review failure routing,ai-workflow-engineer,RA-003,Max 2 retries; safe failed state,DONE,agents.test.ts
+RA-005,Runtime AI & Campaigns,P0,Workflow token budget + daily tenant quota + usage ledger,ai-workflow-engineer,RA-003,Budget stop,DONE,agents.test.ts
+RA-006,Runtime AI & Campaigns,P0,Deterministic claims/injection rules that can only tighten,ai-workflow-engineer,RA-003,Adversarial copy blocked even if model says allow,DONE,agents.test.ts adversarial test
+RA-007,Runtime AI & Campaigns,P0,"Claude LanguageModelProvider (structured outputs, refusal fallback)",integrations-engineer,RA-002,Typed against SDK; enabled by AI_PROVIDER=anthropic,PARTIAL,Typechecks; not exercised without an API key
+RA-008,Runtime AI & Campaigns,P0,"Campaign wizard, agent run graph and approval UI",frontend-engineer,RA-003,Gates visible; compliance blocks approval,DONE,E2E campaign
+RA-009,Runtime AI & Campaigns,P0,"WF-04 localisation (en/ar/he copy, RTL layout checks)",ai-workflow-engineer,RA-003,RTL text renders in compositions,PARTIAL,Localised copy + dir attrs in UI; RTL composition checks TODO
+RA-010,Runtime AI & Campaigns,P1,WF-02 Guided beauty look (Beauty Advisor),ai-workflow-engineer,TO-009,Never sees face images,TODO,
+RA-011,Runtime AI & Campaigns,P1,WF-05 availability-driven rerank and cart invalidation,ai-workflow-engineer,CC-004,Cannot change prices,TODO,
+RA-012,Runtime AI & Campaigns,P1,Connected social publishing behind explicit approval,integrations-engineer,RA-003,No auto-posting,TODO,
+OP-001,"Operations, Privacy & Release",P0,"Privacy controls: export, delete looks/photos, consent history",frontend-engineer,TO-009,Deletion audited without face data,DONE,E2E deletion; core tests
+OP-002,"Operations, Privacy & Release",P0,Append-only audit log without sensitive payloads,supabase-data-engineer,F-006,Update/delete blocked; meta key filter,DONE,audit.ts; 0002 trigger
+OP-003,"Operations, Privacy & Release",P0,First-party analytics events with coarse props,frontend-engineer,F-003,No pixels/landmarks/skin values,DONE,AnalyticsEvent contract
+OP-004,"Operations, Privacy & Release",P0,"Security headers (CSP), same-origin CSRF check, signed media URLs",security-privacy-reviewer,F-010,Cross-origin mutation refused; tampered link 404,DONE,next.config.mjs; api.ts; E2E
+OP-005,"Operations, Privacy & Release",P0,Rate limiting and abuse detection,devops-release-engineer,OP-004,"Per-IP/user limits on auth, checkout, AI",TODO,
+OP-006,"Operations, Privacy & Release",P0,Ops queue/events/audit view for platform admins,frontend-engineer,DM-007,No tenant content or face media,DONE,/ops/jobs
+OP-007,"Operations, Privacy & Release",P0,E2E vertical slice + security/privacy journeys,qa-test-engineer,"CC-008,DM-007,RA-003",All pass on CI,DONE,tests/e2e (11 passing locally)
+OP-008,"Operations, Privacy & Release",P0,"Accessibility audit (axe, keyboard, screen reader, contrast)",ux-design-system,F-004,WCAG 2.1 AA on critical flows,PARTIAL,"Labels, focus, 320px test done; automated axe + SR pass TODO"
+OP-009,"Operations, Privacy & Release",P0,"Structured logging, error monitoring and traces with redaction",devops-release-engineer,F-010,requestId/orgId correlated across web+worker,PARTIAL,JSON logs + request ids; tracing backend TODO
+OP-010,"Operations, Privacy & Release",P1,"Backups, PITR and restore drill",devops-release-engineer,F-011,Documented restore time,TODO,
+OP-011,"Operations, Privacy & Release",P1,"Load tests (catalog, checkout race, 100 renders, 500 AI quota denials)",qa-test-engineer,F-011,Targets set after benchmarking,TODO,
+OP-012,"Operations, Privacy & Release",P2,Predictive forecasting analytics,ai-workflow-engineer,OP-003,,TODO,

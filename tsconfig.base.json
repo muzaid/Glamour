@@ -21,7 +21,7 @@
       "@glamotion/motion": ["packages/motion/src/index.ts"],
       "@glamotion/agents": ["packages/agents/src/index.ts"],
       "@glamotion/integrations": ["packages/integrations/src/index.ts"],
-      "@glamotion/ui": ["packages/ui/src/index.ts"]
+      "@glamotion/ui": ["packages/ui/src/index.tsx"]
     }
   }
 }

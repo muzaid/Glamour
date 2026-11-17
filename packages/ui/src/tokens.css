@@ -1,0 +1,47 @@
+/* GLAMOTION semantic tokens (spec §05). Components use semantic names only. */
+:root {
+  --gm-bg: #FBF8F5;            /* light beauty storefront */
+  --gm-surface: #FFFFFF;
+  --gm-surface-2: #F4EEE9;
+  --gm-ink: #1C1A20;
+  --gm-ink-muted: #5E5763;
+  --gm-border: #E5DCD6;
+  --gm-accent: #B4566A;        /* blush, darkened for AA contrast on light */
+  --gm-accent-soft: #F6E2E5;
+  --gm-copper: #8E5F44;
+  --gm-lavender: #6B55C8;
+  --gm-success: #2F7A59;
+  --gm-danger: #B3261E;
+  --gm-warning: #8A5A00;
+  --gm-focus: #6B55C8;
+  --gm-radius: 12px;
+  --gm-radius-sm: 8px;
+  --gm-shadow: 0 1px 2px rgba(28,26,32,.06), 0 8px 24px rgba(28,26,32,.06);
+  --gm-font-ui: "Inter", "Segoe UI", system-ui, -apple-system, "Noto Sans", "Noto Sans Arabic", "Noto Sans Hebrew", sans-serif;
+  --gm-font-display: "Playfair Display", "Didot", "Bodoni 72", Georgia, "Noto Serif", serif;
+  --gm-ease: cubic-bezier(.16,1,.3,1);
+  --gm-dur-fast: 160ms;
+  --gm-dur: 240ms;
+  --gm-space-1: 4px; --gm-space-2: 8px; --gm-space-3: 12px; --gm-space-4: 16px; --gm-space-6: 24px; --gm-space-8: 32px; --gm-space-12: 48px;
+}
+/* High-contrast charcoal studio */
+.gm-studio {
+  --gm-bg: #101016;
+  --gm-surface: #191922;
+  --gm-surface-2: #22222D;
+  --gm-ink: #FAF7F3;
+  --gm-ink-muted: #B9B2BC;
+  --gm-border: #34303A;
+  --gm-accent: #E6A7B0;
+  --gm-accent-soft: #3A2930;
+  --gm-copper: #BE8D70;
+  --gm-lavender: #9C86EA;
+  --gm-success: #4B9B79;
+  --gm-danger: #F2857D;
+  --gm-warning: #E7B45A;
+  --gm-focus: #9C86EA;
+  --gm-shadow: 0 1px 2px rgba(0,0,0,.4);
+}
+@media (prefers-reduced-motion: reduce) {
+  :root { --gm-dur-fast: 0ms; --gm-dur: 0ms; }
+}

@@ -1,0 +1,27 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 10.28.0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test
+      - name: RLS tests (throwaway Postgres)
+        run: |
+          sudo apt-get update && sudo apt-get install -y postgresql
+          pnpm test:rls
+      - run: sudo apt-get install -y ffmpeg && npx playwright install --with-deps chromium
+      - run: pnpm build
+        env: { GLAMOTION_DEMO_MODE: "1" }
+      - run: pnpm test:e2e
+      - name: Secret scan (fail on committed keys)
+        run: "! git grep -nE '(sk-ant-|sk_live_|service_role\\s*=\\s*ey)' -- ':!*.md'"

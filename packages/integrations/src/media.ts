@@ -15,7 +15,7 @@ export class LocalMediaStorage implements MediaStorage {
     if (!KEY_RE.test(key) || key.includes("..")) throw new Error("Invalid media key");
     return path.join(this.root, key);
   }
-  async put(key: string, bytes: Uint8Array) {
+  async put(key: string, bytes: Uint8Array, _mime?: string) {
     const p = this.resolve(key);
     await fs.mkdir(path.dirname(p), { recursive: true });
     await fs.writeFile(p, bytes);
