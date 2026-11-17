@@ -18,6 +18,7 @@ export default async function TryOnPage({ searchParams }: { searchParams: Promis
     <nav className="gm-row" aria-label="Mirror mode" style={{ marginBottom: 16 }}>
       <Link className={`gm-btn gm-btn-sm ${clothes ? "gm-btn-ghost" : ""}`} href="/try-on" aria-current={clothes ? undefined : "page"} data-testid="mode-makeup">Makeup</Link>
       <Link className={`gm-btn gm-btn-sm ${clothes ? "" : "gm-btn-ghost"}`} href="/try-on?mode=clothes" aria-current={clothes ? "page" : undefined} data-testid="mode-clothes">Clothes</Link>
+      <Link className="gm-btn gm-btn-sm gm-btn-ghost" href="/fitting-room">Fitting room</Link>
     </nav>
   );
   if (clothes) {

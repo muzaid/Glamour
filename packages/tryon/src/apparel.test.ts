@@ -69,3 +69,19 @@ describe("size ordering", () => {
     expect(["12", "8", "10"].sort(compareSizes)).toEqual(["8", "10", "12"]);
   });
 });
+
+import { outfitSvg } from "./outfit";
+describe("outfitSvg (fitting room renderer)", () => {
+  it("layers garments in order with a fitted matrix and is deterministic", () => {
+    const a = outfitSvg([{ category: "top", hex: "#EDE6DA" }, { category: "outerwear", hex: "#3B3A40" }], { skin: "amber" });
+    expect(a).toBe(outfitSvg([{ category: "top", hex: "#EDE6DA" }, { category: "outerwear", hex: "#3B3A40" }], { skin: "amber" }));
+    expect(a.indexOf('data-layer="top"')).toBeLessThan(a.indexOf('data-layer="outerwear"'));
+    expect(a).toMatch(/transform="matrix\(/);
+  });
+  it("ignores non-garments and invalid colours (no markup injection)", () => {
+    const s = outfitSvg([{ category: "lipstick", hex: "#AA0000" }, { category: "top", hex: '"><script>' }], { label: '<b>x</b>' });
+    expect(s).not.toContain("data-layer");
+    expect(s).not.toContain("<script>");
+    expect(s).not.toContain("<b>");
+  });
+});

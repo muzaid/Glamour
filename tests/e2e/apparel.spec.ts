@@ -42,3 +42,26 @@ test("cloud try-on endpoint refuses without a configured provider and never acce
   const anon = await request.post("/api/v1/tryon/generative", { multipart: { consent: "true" } });
   expect(anon.status()).toBe(401);
 });
+
+test("fitting room: spatial carousel dresses the figure, layers outerwear, adds the chosen size to the bag", async ({ page }) => {
+  await signIn(page, "bea");
+  await page.goto("/fitting-room");
+  const figure = page.getByTestId("fit-figure");
+  await expect(figure.locator('[data-layer="top"]')).toHaveCount(1);
+  await shot(page, "16-fitting-room");
+  await page.getByTestId("fit-tab-outerwear").click();
+  await page.getByTestId("fit-card-tailored-wool-blazer-Charcoal").click();
+  await expect(figure.locator('[data-layer="outerwear"]')).toHaveCount(1);
+  await expect(figure.locator('[data-layer="top"]')).toHaveCount(1); // blazer layers over the top
+  await expect(page.getByTestId("fit-title")).toHaveText("Tailored Wool Blazer");
+  await page.getByTestId("fit-size-M").click();
+  await page.getByTestId("fit-add").click();
+  await expect(page.getByText(/Added Tailored Wool Blazer · Charcoal · M/)).toBeVisible();
+  await shot(page, "17-fitting-room-layered");
+  await page.getByTestId("fit-tab-dress").click();
+  await page.getByTestId("fit-card-satin-slip-dress-Emerald").click();
+  await expect(figure.locator('[data-layer="dress"]')).toHaveCount(1);
+  await expect(figure.locator('[data-layer="outerwear"]')).toHaveCount(0); // a dress is worn alone
+  await page.keyboard.press("ArrowRight");
+  await expect(page.getByTestId("fit-title")).toHaveText("Satin Slip Dress");
+});

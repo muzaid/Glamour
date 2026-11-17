@@ -1,20 +1,20 @@
 # Status — sprint 1 (vertical slice) + clothing addendum
 
 ## Clothing addendum (ADR-010)
-Clothing catalog (tops, outerwear, dresses; colour × size), an on-device **clothes mirror** (demo figure, photo upload, live camera — garment overlaid on shoulders/hips via MediaPipe Pose), outfits in saved looks, sizes through cart and orders, and an **opt-in AI realistic preview** flow that is fully guarded but has no vendor configured (it says so and uploads nothing). Tickets AP-001…AP-008.
+Clothing catalog (tops, outerwear, dresses; colour × size), an on-device **clothes mirror** (demo figure, photo upload, live camera — garment overlaid on shoulders/hips via MediaPipe Pose), outfits in saved looks, sizes through cart and orders, and an **opt-in AI realistic preview** flow that is fully guarded but has no vendor configured (it says so and uploads nothing). Tickets AP-001…AP-010. **Fitting room** (`/fitting-room`): spatial carousel of garment cards orbiting the illustrated figure, category tabs, size/colour bar, layering (blazer over top; dress alone), four figure tones, hand-off to the camera/photo mirror.
 
 
-**Tickets:** 85 total (77 spec + 8 clothing) · 52 DONE · 12 PARTIAL · 21 TODO (machine-readable: `tasks.csv`).
+**Tickets:** 87 total (77 spec + 10 clothing) · 53 DONE · 12 PARTIAL · 22 TODO (machine-readable: `tasks.csv`).
 P0 still TODO: F-005 Supabase Auth, F-011 Postgres store, DM-009 static design canvas, OP-005 rate limiting.
 
 ## Evidence (commands run locally on this commit)
 | Gate | Command | Result |
 |---|---|---|
 | Typecheck | `pnpm typecheck` | pass (packages, worker, web) |
-| Unit/integration | `pnpm test` | 74 passed, 12 skipped (RLS suite needs DB) |
+| Unit/integration | `pnpm test` | 76 passed, 12 skipped (RLS suite needs DB) |
 | SQL + RLS | `pnpm test:rls` | 4 migrations applied on Postgres 16; 12/12 tests passed |
 | Production build | `pnpm build` | pass (Next.js 15.5.29) |
-| E2E | `pnpm test:e2e` | 13/13 passed (web + worker started by Playwright) |
+| E2E | `pnpm test:e2e` | 14/14 passed (web + worker started by Playwright) |
 
 Screenshots: `docs/evidence/` (mobile home, PDP, merchant product, consent gate, try-on before/after, cart, paid order, motion editor, client review, completed render, agent graph gates, camera-denied fallback).
 

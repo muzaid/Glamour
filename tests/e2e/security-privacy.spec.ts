@@ -68,7 +68,7 @@ test("invalid review link reveals nothing", async ({ page }) => {
 test("storefront renders at 320px without horizontal scroll", async ({ browser }) => {
   const ctx = await browser.newContext({ viewport: { width: 320, height: 720 } });
   const page = await ctx.newPage();
-  for (const path of ["/", "/shop", "/shop/velvet-matte-lipstick", "/try-on"]) {
+  for (const path of ["/", "/shop", "/shop/velvet-matte-lipstick", "/try-on", "/fitting-room"]) {
     await page.goto(path);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow, path).toBeLessThanOrEqual(0);

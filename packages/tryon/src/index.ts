@@ -7,3 +7,4 @@ export * from "./quality";
 export * from "./demo-face";
 export * from "./apparel";
 export * from "./demo-body";
+export * from "./outfit";
