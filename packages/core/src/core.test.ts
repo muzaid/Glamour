@@ -232,3 +232,33 @@ describe("agency review & render pipeline", () => {
     expect(code(() => createRenderJob(as("lena"), L, { compositionId: composition.id, revision: 1 }, "quota-key-0009"))).toBe("QUOTA_EXCEEDED");
   });
 });
+
+describe("apparel (clothing addendum)", () => {
+  const top = () => [...store.products.values()].find((p) => p.slug === "silk-shell-top")!;
+  const variant = (shade: string, size: string) => [...store.variants.values()].find((v) => v.productId === top().id && v.shadeName === shade && v.sizeLabel === size)!;
+  it("catalog filter 'apparel' returns only clothing, 'beauty' only cosmetics", () => {
+    const apparel = listPublishedProducts(as(null), { category: "apparel" }).map((p) => p.category);
+    expect(apparel.length).toBe(3);
+    expect(apparel.every((c) => ["top", "outerwear", "dress"].includes(c))).toBe(true);
+    expect(listPublishedProducts(as(null), { category: "beauty" }).some((p) => p.category === "top")).toBe(false);
+    expect(getPublishedProduct(as(null), "silk-shell-top").variants.every((v) => !!v.sizeLabel)).toBe(true);
+  });
+  it("size travels through cart into the immutable order snapshot; XL is out of stock", async () => {
+    expect(code(() => addCartItem(as("ava"), { productVariantId: variant("Ivory", "XL").id, quantity: 1 }))).toBe("OUT_OF_STOCK");
+    const cart = addCartItem(as("ava"), { productVariantId: variant("Noir", "M").id, quantity: 1 });
+    expect(cart.lines[0]!.sizeLabel).toBe("M");
+    const r = await checkout(as("ava"), { expectedTotalMinor: 7800, currency: "USD" }, "apparel-key-0001");
+    expect(store.orderItems.find((i) => i.orderId === r.orderId)!.sizeLabel).toBe("M");
+  });
+  it("saves a garments-only look recipe (no image)", () => {
+    const look = saveLook(as("ava"), { name: "Office", recipe: { version: 1, garments: [{ productVariantId: variant("Blush", "S").id }] } });
+    const listed = listMyLooks(as("ava")).find((l) => l.id === look.id)!;
+    expect(listed.garments[0]!.shadeName).toBe("Blush · S");
+    expect(code(() => saveLook(as("ava"), { name: "Empty", recipe: { version: 1 } }))).not.toBe("OK");
+  });
+  it("sizes are ignored on cosmetics variants", () => {
+    const lip = [...store.products.values()].find((p) => p.slug === "velvet-matte-lipstick")!;
+    const v = addVariant(as("marco"), L, lip.id, { sku: "ML-VML-TEST", shadeName: "Test", hex: "#aa2233", finish: "matte", priceMinor: 2800, currency: "USD", initialStock: 1, sizeLabel: "M" });
+    expect(v.sizeLabel).toBeNull();
+  });
+});

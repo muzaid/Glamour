@@ -11,7 +11,7 @@ import type { CartRow, OrderRow } from "./store";
 
 export interface CartLineView {
   itemId: string; variantId: string; productId: string; productSlug: string; productTitle: string; brandName: string;
-  shadeName: string; hex: string; sku: string; quantity: number; unitPriceMinor: number; currency: string; lineTotalMinor: number;
+  shadeName: string; sizeLabel: string | null; hex: string; sku: string; quantity: number; unitPriceMinor: number; currency: string; lineTotalMinor: number;
   available: number; issue: null | "UNAVAILABLE" | "INSUFFICIENT_STOCK";
 }
 export interface CartView { cartId: string | null; lines: CartLineView[]; subtotalMinor: number; taxMinor: number; totalMinor: number; currency: string | null; checkoutReady: boolean }
@@ -47,7 +47,7 @@ export function getCart(ctx: Ctx): CartView {
     const available = availableUnits(ctx, v.id);
     lines.push({
       itemId: item.id, variantId: v.id, productId: p.id, productSlug: p.slug, productTitle: p.title,
-      brandName: ctx.store.brands.get(p.brandId)?.name ?? "", shadeName: v.shadeName, hex: v.hex, sku: v.sku,
+      brandName: ctx.store.brands.get(p.brandId)?.name ?? "", shadeName: v.shadeName, sizeLabel: v.sizeLabel, hex: v.hex, sku: v.sku,
       quantity: item.quantity, unitPriceMinor: v.priceMinor, currency: v.currency, lineTotalMinor: v.priceMinor * item.quantity,
       available, issue: !ok ? "UNAVAILABLE" : available < item.quantity ? "INSUFFICIENT_STOCK" : null,
     });
@@ -134,7 +134,7 @@ export async function checkout(ctx: Ctx, raw: unknown, idempotencyKey: string | 
   for (const l of cart.lines) {
     const v = ctx.store.variants.get(l.variantId)!;
     ctx.store.orderItems.push({
-      id: newId(), orderId, organizationId: v.organizationId, variantId: v.id, productTitle: l.productTitle, shadeName: l.shadeName,
+      id: newId(), orderId, organizationId: v.organizationId, variantId: v.id, productTitle: l.productTitle, shadeName: l.shadeName, sizeLabel: l.sizeLabel,
       sku: l.sku, unitPriceMinor: l.unitPriceMinor, quantity: l.quantity, taxMinor: taxMinor(l.lineTotalMinor, ctx.config.taxRateBps), discountMinor: 0, currency: l.currency,
     });
   }

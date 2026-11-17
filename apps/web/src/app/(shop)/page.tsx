@@ -6,7 +6,7 @@ import { ProductArt } from "@/components/ProductArt";
 
 export default async function Home() {
   const products = listPublishedProducts(await ctx());
-  const swatches = products.flatMap((p) => p.variants.map((v) => ({ hex: v.shade.hex, name: v.shadeName }))).slice(0, 12);
+  const swatches = [...new Map(products.flatMap((p) => p.variants.map((v) => [v.shade.hex, { hex: v.shade.hex, name: v.shadeName }] as const))).values()].slice(0, 12);
   return (
     <>
       <section className="gm-hero">
@@ -15,10 +15,11 @@ export default async function Home() {
         <div className="gm-container gm-hero-inner">
           <div>
             <div className="gm-eyebrow">Cosmetics · Virtual try-on · Motion studio</div>
-            <h1>See the shade before you choose it.</h1>
-            <p style={{ fontSize: 18, color: "#D9D2DB", maxWidth: 520 }}>Preview lipstick, blush and eyeshadow on your own photo — processed privately on your device — then shop the exact shade.</p>
+            <h1>See it on you before you choose it.</h1>
+            <p style={{ fontSize: 18, color: "#D9D2DB", maxWidth: 520 }}>Preview makeup shades and clothing on your own photo or camera — processed privately on your device — then shop the exact colour and size.</p>
             <div className="gm-row" style={{ marginTop: 24 }}>
-              <Link className="gm-btn" href="/try-on">Open Beauty Mirror</Link>
+              <Link className="gm-btn" href="/try-on">Try makeup</Link>
+              <Link className="gm-btn" href="/try-on?mode=clothes">Try clothes</Link>
               <Link className="gm-btn gm-btn-ghost" href="/shop">Shop the edit</Link>
             </div>
           </div>
@@ -34,7 +35,7 @@ export default async function Home() {
               <div className="gm-product-body">
                 <div className="gm-eyebrow">{p.brandName}</div>
                 <div style={{ fontWeight: 600 }}>{p.title}</div>
-                <div className="gm-muted gm-small">{p.variants.length} shades · <span className="gm-price">{p.variants[0] ? formatMoney(p.variants[0].price.amountMinor, p.variants[0].price.currency) : ""}</span></div>
+                <div className="gm-muted gm-small">{new Set(p.variants.map((v) => v.shadeName)).size} {p.variants.some((v) => v.sizeLabel) ? "colours" : "shades"} · <span className="gm-price">{p.variants[0] ? formatMoney(p.variants[0].price.amountMinor, p.variants[0].price.currency) : ""}</span></div>
               </div>
             </Link>
           ))}

@@ -25,3 +25,22 @@ export interface LanguageModelProvider {
 }
 
 export interface EmailProvider { send(input: { to: string; template: string; idempotencyKey: string; vars: Record<string, string> }): Promise<void> }
+
+/**
+ * Opt-in, high-fidelity clothing try-on (spec §07 "separately enabled
+ * asynchronous image enhancement ... only with explicit opt-in and retention
+ * disclosure"). Implementations must process in memory, must not retain the
+ * person image beyond the request, and must state the processor's retention.
+ */
+export interface ApparelTryOnRequest {
+  personImage: Uint8Array; personMime: "image/jpeg" | "image/png" | "image/webp";
+  garmentImage: Uint8Array; garmentMime: "image/png";
+  category: "top" | "outerwear" | "dress";
+  requestId: string;
+}
+export interface ApparelTryOnProvider {
+  readonly name: string;
+  /** Shown to the shopper in the consent dialog before anything is sent. */
+  readonly disclosure: { processor: string; retention: string } | null;
+  generate(req: ApparelTryOnRequest): Promise<{ image: Uint8Array; mime: "image/png" | "image/jpeg" | "image/webp" }>;
+}

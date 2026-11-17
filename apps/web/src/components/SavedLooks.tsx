@@ -14,7 +14,7 @@ export function SavedLooks({ initial }: { initial: Look[] }) {
     if (r.ok) setLooks((l) => l.filter((x) => x.id !== id)); else setMsg(r.error.message);
   }
   async function addAll(look: Look) {
-    for (const i of look.items.filter((x) => x.live && x.available > 0)) {
+    for (const i of [...look.items, ...look.garments].filter((x) => x.live && x.available > 0)) {
       const r = await apiFetch("/api/v1/cart/items", { method: "POST", body: { productVariantId: i.productVariantId, quantity: 1 } });
       if (!r.ok) { setMsg(r.error.message); return; }
     }
@@ -28,15 +28,15 @@ export function SavedLooks({ initial }: { initial: Look[] }) {
         {looks.map((l) => (
           <div key={l.id} className="gm-card gm-stack" data-testid="saved-look">
             <h3>{l.name}</h3>
-            {l.items.map((i) => (
+            {[...l.items, ...l.garments].map((i) => (
               <div key={i.productVariantId} className="gm-row">
                 <span aria-hidden="true" style={{ width: 24, height: 24, borderRadius: "50%", background: i.hex, display: "inline-block" }} />
-                <span>{i.cosmeticRegion}: {i.productTitle} — {i.shadeName} · {Math.round(i.opacity * 100)}%</span>
+                <span>{i.cosmeticRegion === "garment" ? `${i.productTitle} — ${i.shadeName}` : `${i.cosmeticRegion}: ${i.productTitle} — ${i.shadeName} · ${Math.round(i.opacity * 100)}%`}</span>
                 {!i.live ? <span className="gm-chip gm-chip-bad">unavailable</span> : i.available <= 0 ? <span className="gm-chip gm-chip-warn">out of stock</span> : null}
               </div>
             ))}
             <div className="gm-row">
-              <Link className="gm-btn gm-btn-sm" href={`/try-on?look=${l.id}`}>Open in mirror</Link>
+              <Link className="gm-btn gm-btn-sm" href={l.garments.length ? `/try-on?mode=clothes&look=${l.id}` : `/try-on?look=${l.id}`}>Open in mirror</Link>
               <button className="gm-btn gm-btn-ghost gm-btn-sm" onClick={() => addAll(l)}>Add to cart</button>
               <button className="gm-btn gm-btn-danger gm-btn-sm" onClick={() => del(l.id)}>Delete</button>
             </div>

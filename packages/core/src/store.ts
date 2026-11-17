@@ -19,7 +19,7 @@ export interface ProductRow {
 }
 export interface VariantRow {
   id: string; organizationId: string; productId: string; sku: string; shadeName: string; hex: string; finish: Finish;
-  defaultOpacity: number; priceMinor: number; currency: string; active: boolean; createdAt: string; updatedAt: string;
+  defaultOpacity: number; sizeLabel: string | null; priceMinor: number; currency: string; active: boolean; createdAt: string; updatedAt: string;
 }
 export interface InventoryRow { variantId: string; organizationId: string; onHand: number; reserved: number }
 export interface InventoryMovementRow { id: string; variantId: string; organizationId: string; delta: number; reason: string; refId: string | null; createdAt: string }
@@ -31,13 +31,13 @@ export interface CheckoutSessionRow {
 }
 export interface OrderRow { id: string; userId: string; status: OrderStatus; totalMinor: number; taxMinor: number; currency: string; createdAt: string; paidAt: string | null }
 export interface OrderItemRow {
-  id: string; orderId: string; organizationId: string; variantId: string; productTitle: string; shadeName: string; sku: string;
+  id: string; orderId: string; organizationId: string; variantId: string; productTitle: string; shadeName: string; sizeLabel: string | null; sku: string;
   unitPriceMinor: number; quantity: number; taxMinor: number; discountMinor: number; currency: string;
 }
 export interface OrderEventRow { id: string; orderId: string; from: OrderStatus | null; to: OrderStatus; actor: string; createdAt: string }
 export interface PaymentEventRow { providerEventId: string; type: string; orderId: string | null; receivedAt: string; processed: boolean }
 export interface LookRow { id: string; userId: string; name: string; recipe: TryOnRecipeV1; createdAt: string }
-export interface PhotoConsentRow { id: string; userId: string; policyVersion: string; scope: "camera_session" | "store_photo"; granted: boolean; createdAt: string }
+export interface PhotoConsentRow { id: string; userId: string; policyVersion: string; scope: "camera_session" | "store_photo" | "cloud_generation"; granted: boolean; createdAt: string }
 export interface ProjectRow { id: string; organizationId: string; name: string; clientName: string; status: ProjectStatus; createdBy: string; createdAt: string }
 export interface BriefRow { id: string; organizationId: string; projectId: string; input: BriefInput; confirmedByClient: boolean; createdAt: string }
 export interface CompositionRow { id: string; organizationId: string; projectId: string | null; productId: string | null; title: string; headRevision: number; createdBy: string; createdAt: string; updatedAt: string }

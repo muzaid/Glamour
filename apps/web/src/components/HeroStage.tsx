@@ -16,7 +16,7 @@ export function HeroStage({ swatches }: { swatches: { hex: string; name: string 
       <div style={{ position: "absolute", inset: "22%", borderRadius: "50%", background: "radial-gradient(circle at 40% 35%, #3a2930, #191922)", display: "grid", placeItems: "center", textAlign: "center", padding: 24 }}>
         <div>
           <div className="gm-eyebrow">Beauty Mirror</div>
-          <div style={{ fontFamily: "var(--gm-font-display)", fontSize: 26 }}>{n} shades,<br />one tap away</div>
+          <div style={{ fontFamily: "var(--gm-font-display)", fontSize: 26 }}>{n} colours,<br />one tap away</div>
         </div>
       </div>
       <button type="button" className="gm-btn gm-btn-ghost gm-btn-sm gm-hero-pause" onClick={() => setPaused((p) => !p)} aria-pressed={paused}>{paused ? "Play" : "Pause"} motion</button>

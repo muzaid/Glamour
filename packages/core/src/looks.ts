@@ -9,7 +9,7 @@ import { audit, emit } from "./audit";
 export function saveLook(ctx: Ctx, raw: unknown) {
   const actor = requireActor(ctx);
   const input = SaveLookInput.parse(raw);
-  for (const sel of input.recipe.selectedProducts) {
+  for (const sel of [...input.recipe.selectedProducts, ...input.recipe.garments]) {
     const v = ctx.store.variants.get(sel.productVariantId);
     const p = v && ctx.store.products.get(v.productId);
     if (!v || !p || p.status !== "published") throw new AppError("PRODUCT_UNAVAILABLE", "A selected shade is not available");
@@ -34,6 +34,13 @@ export function listMyLooks(ctx: Ctx) {
         const inv = v && ctx.store.inventories.get(v.id);
         return { ...s, shadeName: v?.shadeName ?? "Unavailable", hex: v?.hex ?? "#777777", productTitle: p?.title ?? "", productSlug: p?.slug ?? "", available: live && inv ? inv.onHand - inv.reserved : 0, live };
       }),
+      garments: l.recipe.garments.map((g) => {
+        const v = ctx.store.variants.get(g.productVariantId);
+        const p = v && ctx.store.products.get(v.productId);
+        const live = !!(v && p && v.active && p.status === "published");
+        const inv = v && ctx.store.inventories.get(v.id);
+        return { ...g, cosmeticRegion: "garment" as const, opacity: 1, shadeName: v ? `${v.shadeName}${v.sizeLabel ? ` · ${v.sizeLabel}` : ""}` : "Unavailable", hex: v?.hex ?? "#777777", productTitle: p?.title ?? "", productSlug: p?.slug ?? "", category: p?.category ?? "", available: live && inv ? inv.onHand - inv.reserved : 0, live };
+      }),
     }));
 }
 
@@ -45,7 +52,7 @@ export function deleteLook(ctx: Ctx, id: string) {
   audit(ctx, "look.deleted", "look", id, null);
 }
 
-export function recordPhotoConsent(ctx: Ctx, scope: "camera_session" | "store_photo", granted: boolean, policyVersion: string) {
+export function recordPhotoConsent(ctx: Ctx, scope: "camera_session" | "store_photo" | "cloud_generation", granted: boolean, policyVersion: string) {
   const actor = requireActor(ctx);
   ctx.store.photoConsents.push({ id: newId(), userId: actor.userId, policyVersion, scope, granted, createdAt: nowIso() });
   audit(ctx, granted ? "consent.granted" : "consent.revoked", "photo_consent", null, null, { scope, policyVersion });

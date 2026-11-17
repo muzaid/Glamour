@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { getPublishedProduct, isAppError, CATEGORY_REGION_SAFE } from "@/server/catalog-helpers";
+import { isApparel } from "@glamotion/contracts";
 import { ctx } from "@/server/runtime";
 import { ProductArt } from "@/components/ProductArt";
 import { ShadePicker } from "@/components/ShadePicker";
@@ -21,9 +22,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <h1>{product.title}</h1>
           <p className="gm-muted">{product.description}</p>
         </div>
-        <ShadePicker product={product} signedIn={!!c.actor} tryOnCapable={!!CATEGORY_REGION_SAFE[product.category]} />
-        <details open><summary><strong>How to apply</strong></summary><p>{product.instructions}</p></details>
-        <details><summary><strong>Ingredients</strong></summary><p>{product.ingredients}</p></details>
+        <ShadePicker product={product} signedIn={!!c.actor} tryOnCapable={!!CATEGORY_REGION_SAFE[product.category] || isApparel(product.category)} />
+        <details open><summary><strong>{isApparel(product.category) ? "Care" : "How to apply"}</strong></summary><p>{product.instructions}</p></details>
+        <details><summary><strong>{isApparel(product.category) ? "Composition" : "Ingredients"}</strong></summary><p>{product.ingredients}</p></details>
         <details><summary><strong>Warnings</strong></summary><p>{product.warnings}</p></details>
         <details><summary><strong>Delivery & returns</strong></summary><p>Sandbox demo — no real orders ship. Shipping zones, tax and returns are configured per market before live checkout.</p></details>
       </div>

@@ -4,9 +4,9 @@ import os from "node:os";
 import { randomUUID } from "node:crypto";
 import { cookies, headers } from "next/headers";
 import { DEFAULT_CONFIG, MemoryStore, seedDemo, type AppConfig, type Ctx } from "@glamotion/core";
-import { LocalMediaStorage, SandboxPaymentProvider } from "@glamotion/integrations";
+import { LocalMediaStorage, SandboxPaymentProvider, UnconfiguredApparelTryOnProvider } from "@glamotion/integrations";
 import { ClaudeLanguageModel, DeterministicLanguageModel } from "@glamotion/agents";
-import type { LanguageModelProvider } from "@glamotion/core";
+import type { ApparelTryOnProvider, LanguageModelProvider } from "@glamotion/core";
 import { verifySession, SESSION_COOKIE } from "./session";
 
 const isProd = process.env.NODE_ENV === "production";
@@ -26,6 +26,7 @@ interface Runtime {
   payments: SandboxPaymentProvider;
   media: LocalMediaStorage;
   llm: LanguageModelProvider;
+  apparelTryOn: ApparelTryOnProvider;
 }
 
 const g = globalThis as unknown as { __glamotion?: Runtime };
@@ -40,6 +41,8 @@ export function runtime(): Runtime {
       // Serverless hosts (e.g. Vercel) only allow writes under the OS temp dir.
       media: new LocalMediaStorage(process.env.VERCEL ? path.join(os.tmpdir(), "glamotion-media") : path.resolve(process.cwd(), ".var/media"), secret("MEDIA_SIGNING_SECRET")),
       llm,
+      // Vendor adapter selected via APPAREL_TRYON_PROVIDER once chosen (ADR-010); none ships yet.
+      apparelTryOn: new UnconfiguredApparelTryOnProvider(),
     };
   }
   return g.__glamotion;

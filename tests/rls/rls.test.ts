@@ -164,3 +164,17 @@ describe.skipIf(!url)("RLS: tenant & privacy boundaries", () => {
     }
   });
 });
+
+describe.skipIf(!url)("0004 apparel migration", () => {
+  beforeAll(async () => { client = new pg.Client({ connectionString: url }); await client.connect(); });
+  afterAll(async () => { await client?.end(); });
+  it("accepts apparel categories, sizes and the cloud consent scope; rejects junk sizes", async () => {
+    await client.query("begin");
+    try {
+      await client.query(`insert into public.products (id, organization_id, brand_id, slug, title, category, description) values ('40000000-0000-4000-8000-0000000000aa', '10000000-0000-4000-8000-000000000001', '30000000-0000-4000-8000-000000000001', 'shell-top-x', 'Shell Top', 'top', 'x')`);
+      await client.query(`insert into public.product_variants (organization_id, product_id, sku, shade_name, hex, finish, price_minor, currency, size_label) values ('10000000-0000-4000-8000-000000000001', '40000000-0000-4000-8000-0000000000aa', 'LA-ST-IVR-M', 'Ivory', '#EDE6DA', 'satin', 7800, 'USD', 'M')`);
+      expect(await sqlErrQ(`insert into public.product_variants (organization_id, product_id, sku, shade_name, hex, finish, price_minor, currency, size_label) values ('10000000-0000-4000-8000-000000000001', '40000000-0000-4000-8000-0000000000aa', 'LA-ST-IVR-Z', 'Ivory', '#EDE6DA', 'satin', 7800, 'USD', '<script>')`)).toMatch(/check constraint/);
+      await client.query(`insert into public.photo_consents (user_id, policy_version, scope, granted) values ('00000000-0000-4000-8000-0000000000a1', 'v1', 'cloud_generation', true)`);
+    } finally { await client.query("rollback"); }
+  });
+});

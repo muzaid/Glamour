@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import type { Product } from "@glamotion/contracts";
+import { isApparel, type Product } from "@glamotion/contracts";
 import { PRESETS } from "@glamotion/motion";
 import { StatusChip } from "@glamotion/ui";
 import { apiFetch, money } from "../client";
@@ -24,7 +24,7 @@ export function ProductEditor({ product: initial, orgId, orgSlug, canWrite, canP
     e.preventDefault();
     const form = e.currentTarget;
     const f = new FormData(form);
-    const ok = await call(`${base}/variants`, "POST", { sku: String(f.get("sku")).toUpperCase(), shadeName: f.get("shadeName"), hex: f.get("hex"), finish: f.get("finish"), priceMinor: Math.round(Number(f.get("price")) * 100), currency: "USD", initialStock: Number(f.get("stock")) });
+    const ok = await call(`${base}/variants`, "POST", { sku: String(f.get("sku")).toUpperCase(), shadeName: f.get("shadeName"), hex: f.get("hex"), finish: f.get("finish"), priceMinor: Math.round(Number(f.get("price")) * 100), currency: "USD", initialStock: Number(f.get("stock")), sizeLabel: f.get("size") ? String(f.get("size")) : undefined });
     if (ok) form.reset();
   }
   async function createMotion() {
@@ -49,7 +49,7 @@ export function ProductEditor({ product: initial, orgId, orgSlug, canWrite, canP
           <thead><tr><th>Shade</th><th>SKU</th><th>Finish</th><th>Price</th><th>Available</th>{canWrite && <th>Adjust</th>}</tr></thead>
           <tbody>{p.variants.map((v) => (
             <tr key={v.id}>
-              <td><span style={{ width: 18, height: 18, borderRadius: "50%", background: v.shade.hex, display: "inline-block", verticalAlign: "middle", marginRight: 8 }} />{v.shadeName}</td>
+              <td><span style={{ width: 18, height: 18, borderRadius: "50%", background: v.shade.hex, display: "inline-block", verticalAlign: "middle", marginRight: 8 }} />{v.shadeName}{v.sizeLabel ? ` · ${v.sizeLabel}` : ""}</td>
               <td>{v.sku}</td><td>{v.shade.finish}</td><td>{money(v.price.amountMinor, v.price.currency)}</td><td>{v.available}</td>
               {canWrite && <td className="gm-row"><button className="gm-btn gm-btn-ghost gm-btn-sm" onClick={() => call(base, "PATCH", { stock: { variantId: v.id, delta: 10 } })}>+10</button><button className="gm-btn gm-btn-ghost gm-btn-sm" onClick={() => call(base, "PATCH", { stock: { variantId: v.id, delta: -1 } })}>−1</button></td>}
             </tr>
@@ -57,7 +57,8 @@ export function ProductEditor({ product: initial, orgId, orgSlug, canWrite, canP
         </table></div>
         {canWrite && (
           <form onSubmit={addVariant} className="gm-row" style={{ marginTop: 16, alignItems: "end" }} aria-label="Add shade">
-            <div><label htmlFor="shadeName">Shade name</label><input id="shadeName" name="shadeName" className="gm-input" required maxLength={80} data-testid="variant-name" /></div>
+            {isApparel(p.category) && <div><label htmlFor="size">Size</label><input id="size" name="size" className="gm-input" required pattern="[A-Za-z0-9./ \-]{1,12}" style={{ width: 90 }} placeholder="M" data-testid="variant-size" /></div>}
+            <div><label htmlFor="shadeName">{isApparel(p.category) ? "Colour" : "Shade name"}</label><input id="shadeName" name="shadeName" className="gm-input" required maxLength={80} data-testid="variant-name" /></div>
             <div><label htmlFor="sku">SKU</label><input id="sku" name="sku" className="gm-input" required pattern="[A-Za-z0-9][A-Za-z0-9_\-]+" data-testid="variant-sku" /></div>
             <div><label htmlFor="hex">Colour</label><input id="hex" name="hex" type="color" className="gm-input" defaultValue="#b23a48" style={{ width: 70, padding: 4 }} data-testid="variant-hex" /></div>
             <div><label htmlFor="finish">Finish</label><select id="finish" name="finish" className="gm-input">{["matte", "satin", "gloss", "shimmer", "metallic", "natural"].map((f) => <option key={f}>{f}</option>)}</select></div>

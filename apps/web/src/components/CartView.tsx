@@ -36,7 +36,7 @@ export function CartView({ initial }: { initial: Cart }) {
               <span aria-hidden="true" style={{ width: 40, height: 40, borderRadius: "50%", background: l.hex, display: "inline-block" }} />
               <div>
                 <Link href={`/shop/${l.productSlug}`} style={{ fontWeight: 600 }}>{l.productTitle}</Link>
-                <div className="gm-muted gm-small">{l.brandName} · {l.shadeName} · SKU {l.sku} · Qty {l.quantity}</div>
+                <div className="gm-muted gm-small">{l.brandName} · {l.shadeName}{l.sizeLabel ? ` · Size ${l.sizeLabel}` : ""} · SKU {l.sku} · Qty {l.quantity}</div>
                 {l.issue && <div style={{ color: "var(--gm-danger)" }} className="gm-small">{l.issue === "UNAVAILABLE" ? "No longer available" : `Only ${l.available} left`}</div>}
               </div>
             </div>

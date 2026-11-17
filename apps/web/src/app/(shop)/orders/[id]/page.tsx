@@ -20,7 +20,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
       <p><StatusChip status={o.status} /> <span className="gm-muted gm-small" data-testid="order-status">{o.status}</span></p>
       <div className="gm-card">
         <table className="gm-table"><tbody>
-          {o.items.map((i) => <tr key={i.id}><td>{i.productTitle} — {i.shadeName}<div className="gm-muted gm-small">SKU {i.sku}</div></td><td>× {i.quantity}</td><td>{formatMoney(i.unitPriceMinor * i.quantity, i.currency)}</td></tr>)}
+          {o.items.map((i) => <tr key={i.id}><td>{i.productTitle} — {i.shadeName}{i.sizeLabel ? ` · ${i.sizeLabel}` : ""}<div className="gm-muted gm-small">SKU {i.sku}</div></td><td>× {i.quantity}</td><td>{formatMoney(i.unitPriceMinor * i.quantity, i.currency)}</td></tr>)}
           <tr><th colSpan={2}>Total</th><th>{formatMoney(o.totalMinor, o.currency)}</th></tr>
         </tbody></table>
       </div>

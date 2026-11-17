@@ -31,8 +31,25 @@ export type Role = z.infer<typeof Role>;
 // ---------------------------------------------------------------- Catalog
 export const ProductStatus = z.enum(["draft", "in_review", "published", "archived"]);
 export type ProductStatus = z.infer<typeof ProductStatus>;
-export const CosmeticCategory = z.enum(["lipstick", "lip_gloss", "blush", "eyeshadow", "eyeliner", "foundation", "skincare", "fragrance"]);
+/** Product category. Name kept for compatibility; includes apparel since the clothing addendum (ADR-010). */
+export const CosmeticCategory = z.enum(["lipstick", "lip_gloss", "blush", "eyeshadow", "eyeliner", "foundation", "skincare", "fragrance", "top", "outerwear", "dress"]);
 export type CosmeticCategory = z.infer<typeof CosmeticCategory>;
+export const ProductCategory = CosmeticCategory;
+export type ProductCategory = CosmeticCategory;
+export const ApparelCategory = z.enum(["top", "outerwear", "dress"]);
+export type ApparelCategory = z.infer<typeof ApparelCategory>;
+export const APPAREL_CATEGORIES: readonly ApparelCategory[] = ApparelCategory.options;
+export const isApparel = (c: string): c is ApparelCategory => (APPAREL_CATEGORIES as readonly string[]).includes(c);
+const SIZE_RANK = ["XXS", "XS", "S", "M", "L", "XL", "XXL", "3XL"];
+/** Sort sizes in wearing order (XS < S < M …), numeric sizes ascending, unknown labels last. */
+export const compareSizes = (a: string, b: string): number => {
+  const ra = SIZE_RANK.indexOf(a.toUpperCase()), rb = SIZE_RANK.indexOf(b.toUpperCase());
+  if (ra >= 0 && rb >= 0) return ra - rb;
+  const na = parseFloat(a), nb = parseFloat(b);
+  if (!Number.isNaN(na) && !Number.isNaN(nb)) return na - nb;
+  return ra >= 0 ? -1 : rb >= 0 ? 1 : a.localeCompare(b);
+};
+export const SizeLabel = z.string().regex(/^[A-Za-z0-9./ -]{1,12}$/);
 export const Finish = z.enum(["matte", "satin", "gloss", "shimmer", "metallic", "natural"]);
 export type Finish = z.infer<typeof Finish>;
 export const CosmeticRegion = z.enum(["lips", "cheeks", "eyelids"]);
@@ -106,6 +123,8 @@ export const CreateVariantInput = z.object({
   priceMinor: z.number().int().positive().max(10_000_000),
   currency: CurrencyCode,
   initialStock: z.number().int().min(0).max(1_000_000),
+  /** Apparel only (e.g. "M", "UK 10"). Colour lives in shadeName/hex. */
+  sizeLabel: SizeLabel.optional(),
 });
 export type CreateVariantInput = z.infer<typeof CreateVariantInput>;
 
@@ -125,14 +144,19 @@ export const TryOnRecipeV1 = z.object({
         gloss: z.number().min(0).max(1).default(0),
       }),
     )
-    .min(1)
-    .max(6),
+    .max(6)
+    .default([]),
+  /** On-device garment overlays (apparel variants). */
+  garments: z
+    .array(z.object({ productVariantId: Uuid, fitScale: z.number().min(0.8).max(1.3).default(1), offsetY: z.number().min(-0.3).max(0.3).default(0) }))
+    .max(3)
+    .default([]),
   lightingPreset: z.enum(["neutral", "warm", "cool"]).default("neutral"),
   crop: z.object({ x: z.number(), y: z.number(), w: z.number().positive(), h: z.number().positive() }).optional(),
   viewportTransform: z.object({ scale: z.number().positive(), tx: z.number(), ty: z.number() }).optional(),
   /** Versioned algorithm id keeps renders reproducible. */
   engine: z.string().default("glamotion-overlay@1"),
-});
+}).refine((r) => r.selectedProducts.length + r.garments.length > 0, "Select at least one product");
 export type TryOnRecipeV1 = z.infer<typeof TryOnRecipeV1>;
 
 export const SaveLookInput = z.object({

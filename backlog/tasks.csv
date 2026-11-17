@@ -76,3 +76,11 @@ OP-009,"Operations, Privacy & Release",P0,"Structured logging, error monitoring 
 OP-010,"Operations, Privacy & Release",P1,"Backups, PITR and restore drill",devops-release-engineer,F-011,Documented restore time,TODO,
 OP-011,"Operations, Privacy & Release",P1,"Load tests (catalog, checkout race, 100 renders, 500 AI quota denials)",qa-test-engineer,F-011,Targets set after benchmarking,TODO,
 OP-012,"Operations, Privacy & Release",P2,Predictive forecasting analytics,ai-workflow-engineer,OP-003,,TODO,
+AP-001,Apparel (addendum),P0,"Apparel categories, colour × size variants, size on order snapshots (migration 0004)",cosmetics-commerce-engineer,CC-003,Size travels cart → immutable order line,DONE,core.test.ts apparel; rls.test.ts 0004
+AP-002,Apparel (addendum),P0,"On-device clothes mirror: pose landmarks → 3-point affine garment overlay (photo, camera, demo figure)",beauty-tryon-engineer,TO-005,Anchors land on shoulders/hips; mirrored + hips-out-of-frame handled,DONE,apparel.test.ts; E2E clothes mirror pixel check
+AP-003,Apparel (addendum),P0,"Clothing PDP (colour + size), shop filters, outfits in saved looks, studio size field",frontend-engineer,AP-001,Sizes in wear order; out-of-stock sizes disabled,DONE,E2E apparel.spec.ts
+AP-004,Apparel (addendum),P0,"Opt-in AI clothing try-on flow behind ApparelTryOnProvider (consent, limits, no storage)",integrations-engineer,AP-002,No upload when unavailable; consent required; nothing stored,PARTIAL,Flow + guards done; no vendor adapter (ADR-010)
+AP-005,Apparel (addendum),P1,"Choose and integrate an AI try-on vendor (DPA, retention, cost, legal review)",integrations-engineer,AP-004,Disclosure shown; provider retention documented,TODO,Open decision
+AP-006,Apparel (addendum),P1,Real product garment cut-outs: background removal + anchor annotation in Studio,motion-studio-engineer,AP-002,Uploaded garment photos usable in the mirror,TODO,Mirror uses original vector templates today
+AP-007,Apparel (addendum),P1,Device QA of the clothes mirror on real photos (rights-cleared) and phones,qa-test-engineer,AP-002,Visual approval across poses/body types,TODO,
+AP-008,Apparel (addendum),P1,Size guides per product and returns policy copy,cosmetics-commerce-engineer,AP-001,Size guide visible on PDP,TODO,

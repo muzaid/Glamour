@@ -5,6 +5,9 @@
 | Live camera frames | Browser memory only; cleared on close/hide/unmount | Ephemeral |
 | Uploaded photo (guest or signed-in) | Browser memory only — never uploaded in P0 | Ephemeral |
 | Face landmarks | Browser memory only; never logged, stored or sent | Ephemeral |
+| Body pose landmarks (clothes mirror) | Browser memory only; never logged, stored or sent; no body measurements derived | Ephemeral |
+| Photo sent for opt-in AI clothing preview | Server memory for one request, then to the disclosed provider; never written to storage or logs | Request lifetime (+ provider's disclosed retention) |
+| Saved outfit | `looks.recipe.garments` (variant ids, fit/position sliders) | Until user deletes |
 | Saved look | `looks.recipe` (variant ids, region, opacity, lighting preset, engine version) | Until user deletes |
 | Consent records | `photo_consents` (scope, policy version, granted) — no media | Account lifetime |
 | Render outputs | Private storage, signed URLs ≤5 min | Per workspace policy |

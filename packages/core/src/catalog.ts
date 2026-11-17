@@ -1,4 +1,4 @@
-import { CreateProductInput, CreateVariantInput, type Product, type ProductStatus } from "@glamotion/contracts";
+import { CreateProductInput, CreateVariantInput, isApparel, type Product, type ProductStatus } from "@glamotion/contracts";
 import type { Ctx } from "./context";
 import { requireOrgCap } from "./context";
 import { AppError, notFound } from "./errors";
@@ -23,6 +23,7 @@ export function toProductDto(ctx: Ctx, p: ProductRow, opts: { onlyActive: boolea
       sku: v.sku,
       shadeName: v.shadeName,
       shade: { hex: v.hex, finish: v.finish, defaultOpacity: v.defaultOpacity },
+      sizeLabel: v.sizeLabel ?? undefined,
       price: { amountMinor: v.priceMinor, currency: v.currency },
       available: availableUnits(ctx, v.id),
     }));
@@ -41,7 +42,7 @@ export function listPublishedProducts(ctx: Ctx, filter: { category?: string; q?:
   const q = filter.q?.toLowerCase().trim();
   return [...ctx.store.products.values()]
     .filter((p) => isPubliclyVisible(ctx, p))
-    .filter((p) => !filter.category || p.category === filter.category)
+    .filter((p) => !filter.category || p.category === filter.category || (filter.category === "apparel" && isApparel(p.category)) || (filter.category === "beauty" && !isApparel(p.category)))
     .filter((p) => !filter.brand || ctx.store.brands.get(p.brandId)?.slug === filter.brand)
     .filter((p) => !q || p.title.toLowerCase().includes(q) || p.description.toLowerCase().includes(q))
     .sort((a, b) => (b.publishedAt ?? "").localeCompare(a.publishedAt ?? ""))
@@ -103,7 +104,7 @@ export function addVariant(ctx: Ctx, organizationId: string, productId: string, 
   const now = nowIso();
   const v: VariantRow = {
     id: newId(), organizationId, productId: p.id, sku: input.sku, shadeName: input.shadeName, hex: input.hex.toUpperCase(),
-    finish: input.finish, defaultOpacity: input.finish === "gloss" ? 0.45 : 0.6, priceMinor: input.priceMinor,
+    finish: input.finish, defaultOpacity: input.finish === "gloss" ? 0.45 : 0.6, sizeLabel: isApparel(p.category) ? input.sizeLabel ?? null : null, priceMinor: input.priceMinor,
     currency: input.currency, active: true, createdAt: now, updatedAt: now,
   };
   ctx.store.variants.set(v.id, v);

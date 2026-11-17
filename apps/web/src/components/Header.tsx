@@ -18,7 +18,7 @@ export async function Header() {
           <Link href="/" className="gm-logo">GLAM<span>O</span>TION</Link>
           <nav className="gm-nav" aria-label="Shop">
             <Link href="/shop">Shop</Link>
-            <Link href="/try-on">Beauty Mirror</Link>
+            <Link href="/try-on">Mirror</Link>
             {uid && <Link href="/saved-looks">Saved looks</Link>}
             {uid && <Link href="/orders">Orders</Link>}
             {orgs.length > 0 && <Link href={`/studio/${orgs[0]!.slug}/overview`}>Studio</Link>}

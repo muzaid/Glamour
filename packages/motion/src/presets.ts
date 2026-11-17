@@ -1,5 +1,6 @@
 import type { AspectRatio, DesignLayer, Easing, Keyframe, MotionComposition, MotionElement, Scene, Track } from "@glamotion/contracts";
 import { ASPECT_SIZES, SAFE_AREA } from "./aspect";
+import { BUILTIN_ASSETS, GARMENT_ASSET } from "./assets";
 
 export interface PresetInput {
   id: string;
@@ -51,13 +52,15 @@ function ctx(input: PresetInput) {
   const hero = input.shades[0] ?? { productVariantId: "", name: "Signature", hex: "#B23A48" };
   const m = Math.min(W, H);
   const sx = W * safe.left, sw = W * (1 - safe.left - safe.right), sy = H * safe.top, sh = H * (1 - safe.top - safe.bottom);
-  const productAsset = input.category === "blush" ? "asset:blush-compact" : "asset:lipstick-bullet";
+  const productAsset = (input.category && GARMENT_ASSET[input.category as keyof typeof GARMENT_ASSET])
+    ?? (input.category === "blush" || input.category === "eyeshadow" ? "asset:blush-compact" : "asset:lipstick-bullet");
   return { W, H, fps, pal, hero, m, sx, sw, sy, sh, productAsset };
 }
 
 function revealScene(input: PresetInput, dur: number): Scene {
   const c = ctx(input);
-  const pw = c.m * 0.3, ph = c.productAsset === "asset:blush-compact" ? pw : pw * 2.4;
+  const [vw, vh] = BUILTIN_ASSETS[c.productAsset]!.viewBox;
+  const ph = Math.min(c.m * 0.72, c.m * 0.3 * (vh / vw)), pw = ph * (vw / vh);
   return {
     id: lid("reveal"), name: "Product reveal", durationInFrames: dur, background: c.pal.background,
     elements: [

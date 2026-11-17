@@ -57,7 +57,7 @@ export function seedDemo(store = new MemoryStore()): MemoryStore {
     });
     shades.forEach(([sku, name, hex, finish, price, stock], i) => {
       const vid = sid("50000000-0000-4000-8000-");
-      store.variants.set(vid, { id: vid, organizationId: brand.organizationId, productId: id, sku, shadeName: name, hex, finish, defaultOpacity: finish === "gloss" ? 0.45 : 0.6, priceMinor: price, currency: "USD", active: true, createdAt: at(minute + i), updatedAt: at(minute + i) });
+      store.variants.set(vid, { id: vid, organizationId: brand.organizationId, productId: id, sku, shadeName: name, hex, finish, defaultOpacity: finish === "gloss" ? 0.45 : 0.6, sizeLabel: null, priceMinor: price, currency: "USD", active: true, createdAt: at(minute + i), updatedAt: at(minute + i) });
       store.inventories.set(vid, { variantId: vid, organizationId: brand.organizationId, onHand: stock, reserved: 0 });
     });
     return id;
@@ -91,5 +91,24 @@ export function seedDemo(store = new MemoryStore()): MemoryStore {
     ["RB-PT-POPPY", "Poppy", "#C8323C", "satin", 1900, 60],
     ["RB-PT-ROSE", "Rose Water", "#D47A8C", "satin", 1900, 60],
   ], { ...lipCopy, description: "A sheer, buildable tint for lips and cheeks. Demo product — fictional client brand." });
+  // Apparel (clothing addendum, ADR-010): colour × size variants on a fictional label.
+  const brandA = { id: "30000000-0000-4000-8000-000000000003", organizationId: DEMO_ORGS.lumiere.id, name: "Lumière Atelier", slug: "lumiere-atelier" };
+  store.brands.set(brandA.id, brandA);
+  const apparel = (slug: string, title: string, category: "top" | "outerwear" | "dress", minute: number, price: number, colours: [string, string, string][], sizes: string[], description: string) => {
+    const id = sid("40000000-0000-4000-8000-");
+    store.products.set(id, {
+      id, organizationId: brandA.organizationId, brandId: brandA.id, slug, title, category, description,
+      instructions: "Care: cool hand wash or dry clean. Size guide on request.", ingredients: "Demo fabric composition — supplied by brand before launch.", warnings: "",
+      status: "published", imageAlt: `${title} by ${brandA.name}`, createdAt: at(minute), updatedAt: at(minute), publishedAt: at(minute + 1),
+    });
+    colours.forEach(([code, name, hex], ci) => sizes.forEach((size, si) => {
+      const vid = sid("50000000-0000-4000-8000-");
+      store.variants.set(vid, { id: vid, organizationId: brandA.organizationId, productId: id, sku: `LA-${slug.split("-").map((w) => w[0]!.toUpperCase()).join("")}-${code}-${size}`, shadeName: name, hex, finish: "satin", defaultOpacity: 1, sizeLabel: size, priceMinor: price, currency: "USD", active: true, createdAt: at(minute + ci), updatedAt: at(minute + ci) });
+      store.inventories.set(vid, { variantId: vid, organizationId: brandA.organizationId, onHand: size === "XL" ? 0 : 6 + ((ci + si) % 4) * 3, reserved: 0 });
+    }));
+  };
+  apparel("silk-shell-top", "Silk Shell Top", "top", 60, 7800, [["IVR", "Ivory", "#EDE6DA"], ["BLS", "Blush", "#E2A4AE"], ["NOR", "Noir", "#1E1B22"]], ["XS", "S", "M", "L", "XL"], "A fluid silk-feel shell with a soft cowl neckline. Demo product — fictional label.");
+  apparel("tailored-wool-blazer", "Tailored Wool Blazer", "outerwear", 70, 24800, [["CML", "Camel", "#B9875A"], ["CHR", "Charcoal", "#3B3A40"]], ["S", "M", "L"], "A single-breasted blazer with a softly structured shoulder. Demo product — fictional label.");
+  apparel("satin-slip-dress", "Satin Slip Dress", "dress", 80, 16800, [["CHP", "Champagne", "#D9C3A0"], ["EMR", "Emerald", "#1F5F4A"]], ["XS", "S", "M", "L"], "A bias-cut slip dress with adjustable straps. Demo product — fictional label.");
   return store;
 }

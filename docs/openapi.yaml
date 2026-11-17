@@ -19,6 +19,7 @@ paths:
   /orgs/{orgId}/products/{id}: { patch: { summary: "Transition status / adjust price / adjust stock", security: [{ session: [] }] } }
   /orgs/{orgId}/products/{id}/variants: { post: { summary: Add shade variant (CreateVariantInput), security: [{ session: [] }] } }
   /tryon/sessions: { post: { summary: Initialise ephemeral try-on metadata (no image) } }
+  /tryon/generative: { get: { summary: "Is opt-in AI clothing try-on available? (+ processor disclosure)" }, post: { summary: "Opt-in AI clothing try-on (multipart person+garment, consent=true); FEATURE_DISABLED when no provider", security: [{ session: [] }] } }
   /looks: { get: { summary: My looks }, post: { summary: Persist opted-in look recipe (SaveLookInput) } }
   /looks/{id}: { delete: { summary: Remove owner look } }
   /cart: { get: { summary: Server-priced cart } }

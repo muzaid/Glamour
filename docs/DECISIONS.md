@@ -26,6 +26,11 @@ Hosted-checkout + signed-webhook shape. Live checkout is refused (`FEATURE_DISAB
 ## ADR-008 Not-found over forbidden for tenant resources
 Non-members receive 404 for another tenant's resources (pages and APIs) to avoid existence disclosure; members lacking a capability get 403.
 
+## ADR-010 Clothing addendum: on-device garment overlay + opt-in cloud try-on
+**Context.** The v2.1 spec covered cosmetics only. The product owner asked for clothing that shoppers can see on their own photo or camera.
+**Decision.** (1) Catalog: apparel categories `top | outerwear | dress`; colour reuses `shadeName/hex`; `sizeLabel` per variant (one SKU per colour × size); size is snapshotted on order lines (migration 0004). (2) Default try-on is on-device: MediaPipe Pose Landmarker finds shoulders/hips; a 3-point affine maps a garment template's anchors (shoulder seams + mid-hip) onto the body; hips are estimated from shoulder width when out of frame (webcam). Templates are original vector garments tinted per colour — real product cut-outs need a background-removal + anchor-annotation pipeline (AP-006). (3) Optional realistic preview goes through the `ApparelTryOnProvider` port: availability is checked before any upload; explicit per-request consent; signed-in users; 5/hour; magic-byte validation; in-memory only; consent + audit recorded without the image. No vendor ships: the default provider returns `FEATURE_DISABLED`.
+**Consequences.** The overlay is a 2D illustration: no cloth simulation, folds, arm occlusion or fit prediction; UI copy says so and never claims fit. Generative try-on needs a vendor decision (data-processing terms, retention, cost) and legal review before enabling. Size recommendation from body measurements is out of scope (it would infer body shape).
+
 ## ADR-009 Open decisions (defaults in use)
 | Decision | Default now |
 |---|---|
@@ -36,3 +41,5 @@ Non-members receive 404 for another tenant's resources (pages and APIs) to avoid
 | Age threshold | 18+ self-attestation for camera/photo |
 | Default locale | en (ar/he copy generated; RTL layout checks pending) |
 | Video output | 9:16 1080×1920 WebM, ≤60 s |
+| AI clothing try-on vendor | None configured (`FEATURE_DISABLED`) |
+| Size guides / fit data | Text-only care/size notes; no fit prediction |

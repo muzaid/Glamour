@@ -4,7 +4,7 @@ import { ctx } from "@/server/runtime";
 import { ProductArt } from "@/components/ProductArt";
 
 export const metadata = { title: "Shop" };
-const CATS = [["", "All"], ["lipstick", "Lipstick"], ["blush", "Blush"], ["eyeshadow", "Eyeshadow"]] as const;
+const CATS = [["", "All"], ["beauty", "Beauty"], ["lipstick", "Lipstick"], ["blush", "Blush"], ["eyeshadow", "Eyeshadow"], ["apparel", "Clothing"], ["top", "Tops"], ["outerwear", "Outerwear"], ["dress", "Dresses"]] as const;
 
 export default async function Shop({ searchParams }: { searchParams: Promise<{ category?: string; q?: string }> }) {
   const sp = await searchParams;
@@ -14,7 +14,7 @@ export default async function Shop({ searchParams }: { searchParams: Promise<{ c
       <h1>Shop</h1>
       <form className="gm-row" role="search" style={{ marginBottom: 24 }}>
         <label htmlFor="q" className="gm-skip">Search products</label>
-        <input id="q" name="q" className="gm-input" style={{ maxWidth: 320 }} placeholder="Search lipstick, blush…" defaultValue={sp.q ?? ""} />
+        <input id="q" name="q" className="gm-input" style={{ maxWidth: 320 }} placeholder="Search lipstick, blazer…" defaultValue={sp.q ?? ""} />
         {sp.category && <input type="hidden" name="category" value={sp.category} />}
         <button className="gm-btn gm-btn-sm" type="submit">Search</button>
         <nav className="gm-row" aria-label="Categories">
@@ -30,7 +30,7 @@ export default async function Shop({ searchParams }: { searchParams: Promise<{ c
                 <div className="gm-eyebrow">{p.brandName}</div>
                 <div style={{ fontWeight: 600 }}>{p.title}</div>
                 <div className="gm-row" style={{ gap: 6, margin: "8px 0" }} aria-hidden="true">
-                  {p.variants.map((v) => <span key={v.id} style={{ width: 16, height: 16, borderRadius: "50%", background: v.shade.hex, display: "inline-block", boxShadow: "0 0 0 1px var(--gm-border)" }} />)}
+                  {[...new Map(p.variants.map((v) => [v.shadeName, v])).values()].map((v) => <span key={v.id} style={{ width: 16, height: 16, borderRadius: "50%", background: v.shade.hex, display: "inline-block", boxShadow: "0 0 0 1px var(--gm-border)" }} />)}
                 </div>
                 <div className="gm-price">{p.variants[0] ? formatMoney(p.variants[0].price.amountMinor, p.variants[0].price.currency) : ""}</div>
               </div>
