@@ -238,10 +238,10 @@ describe("apparel (clothing addendum)", () => {
   const variant = (shade: string, size: string) => [...store.variants.values()].find((v) => v.productId === top().id && v.shadeName === shade && v.sizeLabel === size)!;
   it("catalog filter 'apparel' returns only clothing, 'beauty' only cosmetics", () => {
     const apparel = listPublishedProducts(as(null), { category: "apparel" }).map((p) => p.category);
-    // 3 Lumière Atelier pieces + 8 runway lookbook pieces (tops and footwear).
-    expect(apparel.length).toBe(11);
-    expect(apparel.every((c) => ["top", "outerwear", "dress", "bottoms", "footwear"].includes(c))).toBe(true);
-    expect(listPublishedProducts(as(null), { category: "beauty" }).some((p) => ["top", "footwear"].includes(p.category))).toBe(false);
+    // 3 Lumière Atelier pieces + 8 runway lookbook pieces + 12 Maison Edit pieces.
+    expect(apparel.length).toBe(23);
+    expect(apparel.every((c) => ["top", "outerwear", "dress", "bottoms", "footwear", "bags"].includes(c))).toBe(true);
+    expect(listPublishedProducts(as(null), { category: "beauty" }).some((p) => ["top", "footwear", "bags"].includes(p.category))).toBe(false);
     expect(getPublishedProduct(as(null), "silk-shell-top").variants.every((v) => !!v.sizeLabel)).toBe(true);
   });
   it("size travels through cart into the immutable order snapshot; XL is out of stock", async () => {

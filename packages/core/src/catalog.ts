@@ -1,4 +1,4 @@
-import { CreateProductInput, CreateVariantInput, isWearable, REFERENCE_ASSET_BASE, higgsImageUrl, type ImageRef, type Product, type ProductStatus } from "@glamotion/contracts";
+import { CreateProductInput, CreateVariantInput, isFashion, isWearable, REFERENCE_ASSET_BASE, higgsImageUrl, type ImageRef, type Product, type ProductStatus } from "@glamotion/contracts";
 import type { Ctx } from "./context";
 import { requireOrgCap } from "./context";
 import { AppError, notFound } from "./errors";
@@ -50,7 +50,7 @@ export function listPublishedProducts(ctx: Ctx, filter: { category?: string; q?:
   const q = filter.q?.toLowerCase().trim();
   return [...ctx.store.products.values()]
     .filter((p) => isPubliclyVisible(ctx, p))
-    .filter((p) => !filter.category || p.category === filter.category || (filter.category === "apparel" && isWearable(p.category)) || (filter.category === "beauty" && !isWearable(p.category)))
+    .filter((p) => !filter.category || p.category === filter.category || (filter.category === "apparel" && isFashion(p.category)) || (filter.category === "beauty" && !isFashion(p.category)))
     .filter((p) => !filter.brand || ctx.store.brands.get(p.brandId)?.slug === filter.brand)
     .filter((p) => !q || p.title.toLowerCase().includes(q) || p.description.toLowerCase().includes(q))
     .sort((a, b) => (b.publishedAt ?? "").localeCompare(a.publishedAt ?? ""))

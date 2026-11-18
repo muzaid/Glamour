@@ -40,6 +40,9 @@ Non-members receive 404 for another tenant's resources (pages and APIs) to avoid
 ## ADR-013 Drop posts ("Arriving Tomorrow") are admin-managed
 `/drop` (first published drop) and `/drop/{id}` render a square mix-and-match teaser from a `drop_posts` record: headline, a top and a bottom **white** garment cut-out, and an ordered colourway list per row. Colours are produced in the browser (colour layer masked by the cut-out + the white photo multiplied through a gamma-2.6 shading filter), so one photo serves every colourway. Brands manage drops in Studio → Drops (`catalog.write`; publishing needs `catalog.publish` and both photos). Images are `ImageRef`s only; the seeded cut-outs use the new `higgs` kind (a validated path on the images.higgs.ai proxy). Inter Tight is self-hosted (latin subset) instead of loading Google Fonts, so the CSP needs no font/style hosts; `images.higgs.ai` is added to `img-src`. Autoplay is skipped under `prefers-reduced-motion`. SQL: 0006_drops.sql with RLS.
 
+## ADR-014 Maison Edit build-your-look page uses the real catalog
+`/maison-edit` recreates the "Maison Edit — Build Your Look" try-on page: a canvas compositor blends nine pixel-registered model photos through eight soft region masks (verbatim from the brief), with sweep reveals, shop filters, stylist looks, AR backdrop and drag-to-rotate. The 12 pieces and 4 fictional stores (NORRA, Lune&Co, MERIDIAN, ODE STUDIO) are seeded as real catalog products (new `bags` category, 0007), so names, stores and prices are read from the catalog on each request and "Shop the Look" adds the actual variants to the signed-in shopper's bag (signed-out shoppers are asked to sign in) instead of a fake "added" state. The model photos are fictional AI-generated imagery supplied by the product owner; no shopper photo is involved. Fonts (Inter, Bodoni Moda) are self-hosted.
+
 ## ADR-009 Open decisions (defaults in use)
 | Decision | Default now |
 |---|---|

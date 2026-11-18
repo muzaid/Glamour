@@ -32,7 +32,7 @@ export type Role = z.infer<typeof Role>;
 export const ProductStatus = z.enum(["draft", "in_review", "published", "archived"]);
 export type ProductStatus = z.infer<typeof ProductStatus>;
 /** Product category. Name kept for compatibility; includes apparel since the clothing addendum (ADR-010). */
-export const CosmeticCategory = z.enum(["lipstick", "lip_gloss", "blush", "eyeshadow", "eyeliner", "foundation", "skincare", "fragrance", "top", "outerwear", "dress", "bottoms", "footwear"]);
+export const CosmeticCategory = z.enum(["lipstick", "lip_gloss", "blush", "eyeshadow", "eyeliner", "foundation", "skincare", "fragrance", "top", "outerwear", "dress", "bottoms", "footwear", "bags"]);
 export type CosmeticCategory = z.infer<typeof CosmeticCategory>;
 export const ProductCategory = CosmeticCategory;
 export type ProductCategory = CosmeticCategory;
@@ -43,6 +43,8 @@ export const isApparel = (c: string): c is ApparelCategory => (APPAREL_CATEGORIE
 /** Everything that is worn and sold by size (try-on overlays exist only for ApparelCategory). */
 export const WEARABLE_CATEGORIES: readonly CosmeticCategory[] = ["top", "outerwear", "dress", "bottoms", "footwear"];
 export const isWearable = (c: string): boolean => (WEARABLE_CATEGORIES as readonly string[]).includes(c);
+/** Fashion = wearables + accessories such as bags (the storefront "apparel" filter). */
+export const isFashion = (c: string): boolean => isWearable(c) || c === "bags";
 const SIZE_RANK = ["XXS", "XS", "S", "M", "L", "XL", "XXL", "3XL"];
 /** Sort sizes in wearing order (XS < S < M …), numeric sizes ascending, unknown labels last. */
 export const compareSizes = (a: string, b: string): number => {

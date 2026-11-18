@@ -113,6 +113,7 @@ export function seedDemo(store = new MemoryStore()): MemoryStore {
   apparel("satin-slip-dress", "Satin Slip Dress", "dress", 80, 16800, [["CHP", "Champagne", "#D9C3A0"], ["EMR", "Emerald", "#1F5F4A"]], ["XS", "S", "M", "L"], "A bias-cut slip dress with adjustable straps. Demo product — fictional label.");
   seedRunway(store, at);
   seedDrops(store, at);
+  seedMaison(store, at);
   return store;
 }
 
@@ -179,5 +180,50 @@ function seedDrops(store: MemoryStore, at: (min: number) => string) {
     top: { image: { kind: "higgs", path: "user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261106_065532_0fd0b9b0-7f8e-4519-b490-6478519b5186.png" }, colours: DEFAULT_TOPS.map((c) => ({ ...c })) },
     bottom: { image: { kind: "higgs", path: "user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261106_065534_5ab4e8d0-8d00-42b4-b0ac-6dc60ea7aac0.png" }, colours: DEFAULT_BOTS.map((c) => ({ ...c })) },
     createdBy: DEMO_USERS.lena.id, createdAt: at(300), updatedAt: at(300),
+  });
+}
+
+/** Maison Edit build-your-look pieces: four fictional stores, keys t/k/s/g + index (1 = what the base photo wears). */
+export const MAISON_STORES = [
+  { key: "norra", id: "30000000-0000-4000-8000-000000000011", name: "NORRA", slug: "norra" },
+  { key: "lune", id: "30000000-0000-4000-8000-000000000012", name: "Lune&Co", slug: "lune-co" },
+  { key: "meridian", id: "30000000-0000-4000-8000-000000000013", name: "MERIDIAN", slug: "meridian" },
+  { key: "ode", id: "30000000-0000-4000-8000-000000000014", name: "ODE STUDIO", slug: "ode-studio" },
+] as const;
+export const MAISON_PIECES: { key: string; store: string; name: string; priceMinor: number; c: number; r: number; tags: string[] }[] = [
+  { key: "t1", store: "norra", name: "Off-shoulder top", priceMinor: 2990, c: 0, r: 0, tags: ["minimal", "soft"] },
+  { key: "t2", store: "meridian", name: "Ribbed turtleneck", priceMinor: 3490, c: 1, r: 0, tags: ["minimal", "sharp"] },
+  { key: "t3", store: "lune", name: "Cropped knit cardigan", priceMinor: 4500, c: 2, r: 0, tags: ["romantic", "wine"] },
+  { key: "k1", store: "meridian", name: "Pleated mini skirt", priceMinor: 4999, c: 0, r: 1, tags: ["minimal", "sharp"] },
+  { key: "k2", store: "norra", name: "Denim mini skirt", priceMinor: 3990, c: 1, r: 1, tags: ["casual"] },
+  { key: "k3", store: "ode", name: "Bouclé tweed skirt", priceMinor: 5900, c: 2, r: 1, tags: ["romantic", "soft"] },
+  { key: "s1", store: "norra", name: "Leather knee boots", priceMinor: 12900, c: 0, r: 2, tags: ["minimal", "sharp"] },
+  { key: "s2", store: "ode", name: "Leather sneakers", priceMinor: 8900, c: 1, r: 2, tags: ["casual"] },
+  { key: "s3", store: "lune", name: "Wine knee boots", priceMinor: 13900, c: 2, r: 2, tags: ["romantic", "wine"] },
+  { key: "g1", store: "ode", name: "Buckle shoulder bag", priceMinor: 18900, c: 0, r: 3, tags: ["minimal", "sharp"] },
+  { key: "g2", store: "lune", name: "Quilted mini bag", priceMinor: 15900, c: 1, r: 3, tags: ["romantic", "soft"] },
+  { key: "g3", store: "meridian", name: "Wine top-handle bag", priceMinor: 17500, c: 2, r: 3, tags: ["romantic", "wine"] },
+];
+export const maisonSlug = (key: string) => `maison-${key}`;
+
+function seedMaison(store: MemoryStore, at: (min: number) => string) {
+  const org = DEMO_ORGS.lumiere.id;
+  for (const b of MAISON_STORES) store.brands.set(b.id, { id: b.id, organizationId: org, name: b.name, slug: b.slug });
+  const category = { t: "top", k: "bottoms", s: "footwear", g: "bags" } as const;
+  const size = { t: "M", k: "M", s: "38", g: null } as const;
+  MAISON_PIECES.forEach((p, i) => {
+    const brand = MAISON_STORES.find((b) => b.key === p.store)!;
+    const cat = p.key[0] as keyof typeof category;
+    const id = sid("40000000-0000-4000-8000-");
+    const minute = 400 + i;
+    store.products.set(id, {
+      id, organizationId: org, brandId: brand.id, slug: maisonSlug(p.key), title: p.name, category: category[cat], status: "published",
+      imageAlt: `${p.name} by ${brand.name}`, image: null, description: "From the Maison Edit build-your-look collection. Demo product — fictional store.",
+      instructions: "Size guide on request.", ingredients: "Composition supplied by brand before launch.", warnings: "",
+      createdAt: at(minute), updatedAt: at(minute), publishedAt: at(minute),
+    });
+    const vid = sid("50000000-0000-4000-8000-");
+    store.variants.set(vid, { id: vid, organizationId: org, productId: id, sku: `ME-${p.key.toUpperCase()}`, shadeName: "Standard", hex: "#151515", finish: "natural", defaultOpacity: 1, sizeLabel: size[cat], priceMinor: p.priceMinor, currency: "USD", active: true, createdAt: at(minute), updatedAt: at(minute) });
+    store.inventories.set(vid, { variantId: vid, organizationId: org, onHand: 20, reserved: 0 });
   });
 }
