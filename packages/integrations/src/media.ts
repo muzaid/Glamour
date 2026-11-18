@@ -2,7 +2,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { hmac, safeEqualHex, type MediaStorage } from "@glamotion/core";
 
-const KEY_RE = /^[a-z0-9][a-z0-9/_-]{0,200}\.(webm|png|jpg|json)$/;
+const KEY_RE = /^[a-z0-9][a-z0-9/_-]{0,200}\.(webm|png|jpg|webp|json)$/;
 
 /**
  * Local private object storage for development (stands in for a private

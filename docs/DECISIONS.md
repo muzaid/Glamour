@@ -34,6 +34,9 @@ Non-members receive 404 for another tenant's resources (pages and APIs) to avoid
 ## ADR-011 Fitting room uses photographed models, not illustrated figures
 **Decision (product owner, 2026-11-18).** The fitting room shows real-looking photography of a model rather than an illustrated/3D figure. Demo photos are AI-generated images of a fictional adult model with recorded provenance (`apps/web/public/models/*/PROVENANCE.md`); production uses brand shoots. Outfit → photo matching is explicit (`pickOnModelPhoto`); a missing combination shows the closest photo with a visible note rather than a silent substitute. The camera/photo mirror (ADR-010) is unchanged: it overlays garments on the shopper's own image on-device.
 
+## ADR-012 Runway lookbook is catalog-driven
+`/runway` ("Try the Look.") is server-rendered on every request from `runwayFeed()`: published runway looks of active organizations, pinned only to that organization's **published** products, with sizes, availability and prices read from the catalog. Brands manage looks in Studio → Runway (`catalog.write`; publishing needs `catalog.publish`), and product photos on the product page. Images are stored as references only (`ImageRef`: a private catalog-media key or an allow-listed file on the reference lookbook host), never as arbitrary URLs; uploads are type-sniffed (PNG/JPEG/WebP ≤ 4 MB). Catalog media is public only while a published product or look uses it, otherwise members-only. "Add to bag" uses the real cart API, so totals and stock are server-side; the reference store's "save 10%" bundle copy was dropped because no bundle discount exists at checkout. SQL: 0005_runway.sql with RLS.
+
 ## ADR-009 Open decisions (defaults in use)
 | Decision | Default now |
 |---|---|

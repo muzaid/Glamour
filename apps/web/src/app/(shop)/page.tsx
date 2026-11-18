@@ -31,7 +31,7 @@ export default async function Home() {
         <div className="gm-grid">
           {products.slice(0, 4).map((p) => (
             <Link key={p.id} href={`/shop/${p.slug}`} className="gm-card gm-product-card">
-              <div className="gm-product-art"><ProductArt category={p.category} hex={p.variants[0]?.shade.hex ?? "#E6A7B0"} label={p.imageAlt} /></div>
+              <div className="gm-product-art"><ProductArt category={p.category} hex={p.variants[0]?.shade.hex ?? "#E6A7B0"} label={p.imageAlt} imageUrl={p.imageUrl} /></div>
               <div className="gm-product-body">
                 <div className="gm-eyebrow">{p.brandName}</div>
                 <div style={{ fontWeight: 600 }}>{p.title}</div>

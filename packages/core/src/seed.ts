@@ -2,8 +2,8 @@ import type { Finish, CosmeticCategory, Role } from "@glamotion/contracts";
 import { MemoryStore } from "./store";
 
 /**
- * Clearly labelled FICTIONAL demo fixtures (spec §02). No real brands, no
- * real people, no face photos.
+ * Clearly labelled FICTIONAL demo fixtures (spec §02), plus the owner's own
+ * runway lookbook catalog (see seedRunway). No face photos of shoppers.
  */
 export const DEMO_USERS = {
   ava: { id: "00000000-0000-4000-8000-0000000000a1", displayName: "Ava (demo shopper)", email: "ava@demo.glamotion.test" },
@@ -52,7 +52,7 @@ export function seedDemo(store = new MemoryStore()): MemoryStore {
   ) => {
     const id = sid("40000000-0000-4000-8000-");
     store.products.set(id, {
-      id, organizationId: brand.organizationId, brandId: brand.id, slug, title, category, ...extra, status, imageAlt: `${title} by ${brand.name}`,
+      id, organizationId: brand.organizationId, brandId: brand.id, slug, title, category, ...extra, status, imageAlt: `${title} by ${brand.name}`, image: null,
       createdAt: at(minute), updatedAt: at(minute), publishedAt: status === "published" ? at(minute + 1) : null,
     });
     shades.forEach(([sku, name, hex, finish, price, stock], i) => {
@@ -99,7 +99,7 @@ export function seedDemo(store = new MemoryStore()): MemoryStore {
     store.products.set(id, {
       id, organizationId: brandA.organizationId, brandId: brandA.id, slug, title, category, description,
       instructions: "Care: cool hand wash or dry clean. Size guide on request.", ingredients: "Demo fabric composition — supplied by brand before launch.", warnings: "",
-      status: "published", imageAlt: `${title} by ${brandA.name}`, createdAt: at(minute), updatedAt: at(minute), publishedAt: at(minute + 1),
+      status: "published", imageAlt: `${title} by ${brandA.name}`, image: null, createdAt: at(minute), updatedAt: at(minute), publishedAt: at(minute + 1),
     });
     colours.forEach(([code, name, hex], ci) => sizes.forEach((size, si) => {
       const vid = sid("50000000-0000-4000-8000-");
@@ -110,5 +110,61 @@ export function seedDemo(store = new MemoryStore()): MemoryStore {
   apparel("silk-shell-top", "Silk Shell Top", "top", 60, 7800, [["IVR", "Ivory", "#EDE6DA"], ["BLS", "Blush", "#E2A4AE"], ["NOR", "Noir", "#1E1B22"]], ["XS", "S", "M", "L", "XL"], "A fluid silk-feel shell with a soft cowl neckline. Demo product — fictional label.");
   apparel("tailored-wool-blazer", "Tailored Wool Blazer", "outerwear", 70, 24800, [["CML", "Camel", "#B9875A"], ["CHR", "Charcoal", "#3B3A40"]], ["S", "M", "L"], "A single-breasted blazer with a softly structured shoulder. Demo product — fictional label.");
   apparel("satin-slip-dress", "Satin Slip Dress", "dress", 80, 16800, [["CHP", "Champagne", "#D9C3A0"], ["EMR", "Emerald", "#1F5F4A"]], ["XS", "S", "M", "L"], "A bias-cut slip dress with adjustable straps. Demo product — fictional label.");
+  seedRunway(store, at);
   return store;
+}
+
+/**
+ * The "Try the Look" lookbook: the owner's reference catalog (names, sizes and
+ * prices from their original store export) with art served from the reference
+ * host, plus the six published runway looks. Managed in Studio → Runway.
+ */
+function seedRunway(store: MemoryStore, at: (min: number) => string) {
+  const org = DEMO_ORGS.lumiere.id;
+  const brand = { id: "30000000-0000-4000-8000-000000000004", organizationId: org, name: "Nike", slug: "nike" };
+  store.brands.set(brand.id, brand);
+  const SHOE = ["40", "41", "42", "43", "44", "45", "46"], APP = ["S", "M", "L", "XL"];
+  const items: [key: string, title: string, slug: string, category: CosmeticCategory, price: number, sizes: string[], file: string][] = [
+    ["aj12", "Air Jordan 12 Retro", "air-jordan-12-retro", "footwear", 14900, SHOE, "source-tatum-5-orbit-copy.webp"],
+    ["tshirt", "Tshirt", "tshirt", "top", 19900, APP, "source-tshirt.webp"],
+    ["sweatshirt", "Sweatshirt", "sweatshirt", "top", 19900, APP, "source-sweatshirt.webp"],
+    ["tatum", "Tatum 5 Orbit", "tatum-5-orbit", "footwear", 14900, SHOE, "source-tatum-5-orbit.webp"],
+    ["hoodieBlack", "Hoodie Black", "hoodie-black", "top", 19900, APP, "source-hoodie-black.webp"],
+    ["sweatshirtPlus", "Sweatshirt Plus", "sweatshirt-plus", "top", 19900, APP, "source-sweatshirt-plus.webp"],
+    ["hoodie", "Hoodie", "hoodie", "top", 19900, APP, "source-hoodie.webp"],
+    ["luka", "Luka 5", "luka-5", "footwear", 14900, SHOE, "source-air-jordan-12-retro-copy.webp"],
+  ];
+  const ids: Record<string, string> = {};
+  items.forEach(([key, title, slug, category, price, sizes, file], i) => {
+    const id = sid("40000000-0000-4000-8000-");
+    ids[key] = id;
+    const minute = 100 + i * 2;
+    store.products.set(id, {
+      id, organizationId: org, brandId: brand.id, slug, title, category, status: "published", imageAlt: `${title} by ${brand.name}`,
+      image: { kind: "reference", file }, description: "From the original Try the Look lookbook.", instructions: "Size guide on request.",
+      ingredients: "Composition supplied by brand before launch.", warnings: "", createdAt: at(minute), updatedAt: at(minute), publishedAt: at(minute + 1),
+    });
+    sizes.forEach((size, si) => {
+      const vid = sid("50000000-0000-4000-8000-");
+      store.variants.set(vid, { id: vid, organizationId: org, productId: id, sku: `RW-${slug.toUpperCase()}-${size}`, shadeName: "Standard", hex: "#151413", finish: "natural", defaultOpacity: 1, sizeLabel: size, priceMinor: price, currency: "USD", active: true, createdAt: at(minute + si / 100), updatedAt: at(minute) });
+      store.inventories.set(vid, { variantId: vid, organizationId: org, onHand: 10, reserved: 0 });
+    });
+  });
+  const looks: [name: string, model: number, description: string, pins: [key: string, left: number, top: number, tag: string | null][]][] = [
+    ["The City Edit", 1, "A charcoal knit and easy denim.", [["aj12", 47, 27, null], ["tshirt", 48, 58, null], ["sweatshirt", 45, 96, null]]],
+    ["Gallery Opening", 5, "A clean white tee and relaxed denim.", [["tatum", 50, 28, null], ["hoodieBlack", 48, 58, "New"], ["tshirt", 45, 88, null]]],
+    ["Gallery Opening", 4, "Olive knitwear. A grounded palette.", [["sweatshirtPlus", 50, 28, null], ["tatum", 48, 58, "New"], ["tshirt", 45, 88, null]]],
+    ["Studio Day", 6, "Black, white and laid-back denim.", [["hoodieBlack", 50, 28, null], ["aj12", 48, 58, null], ["tshirt", 45, 88, null]]],
+    ["Studio Day", 3, "Burgundy layers. A tailored perspective.", [["sweatshirt", 50, 28, null], ["tatum", 48, 58, null], ["tshirt", 45, 88, null]]],
+    ["Studio Day", 2, "A grey crew and your favourite denim.", [["hoodie", 50, 28, null], ["luka", 48, 58, null], ["tshirt", 45, 88, null]]],
+  ];
+  looks.forEach(([name, model, description, pins], i) => {
+    const id = sid("60000000-0000-4000-8000-");
+    store.runwayLooks.set(id, {
+      id, organizationId: org, name, description, position: i, status: "published",
+      image: { kind: "reference", file: `model-${model}-640.webp`, large: `original-look-${model}.webp` },
+      pins: pins.map(([key, left, top, tag]) => ({ productId: ids[key]!, left, top, tag })),
+      createdBy: DEMO_USERS.lena.id, createdAt: at(200 + i), updatedAt: at(200 + i),
+    });
+  });
 }

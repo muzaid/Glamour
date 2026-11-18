@@ -5,7 +5,7 @@
  */
 import type {
   CosmeticCategory, Finish, MotionComposition, OrderStatus, ProductStatus, ProjectStatus, RenderStatus, Role,
-  TryOnRecipeV1, WorkflowStatus, BriefInput,
+  TryOnRecipeV1, WorkflowStatus, BriefInput, ImageRef, RunwayLookStatus, RunwayPin,
 } from "@glamotion/contracts";
 
 export interface ProfileRow { id: string; displayName: string; email: string; isPlatformAdmin: boolean; createdAt: string; deletedAt: string | null }
@@ -15,7 +15,7 @@ export interface BrandRow { id: string; organizationId: string; name: string; sl
 export interface ProductRow {
   id: string; organizationId: string; brandId: string; slug: string; title: string; category: CosmeticCategory;
   description: string; instructions: string; ingredients: string; warnings: string; status: ProductStatus;
-  imageAlt: string; createdAt: string; updatedAt: string; publishedAt: string | null;
+  imageAlt: string; image: ImageRef | null; createdAt: string; updatedAt: string; publishedAt: string | null;
 }
 export interface VariantRow {
   id: string; organizationId: string; productId: string; sku: string; shadeName: string; hex: string; finish: Finish;
@@ -66,6 +66,11 @@ export interface AnalyticsRow { id: string; name: string; userId: string | null;
 export interface DeletionRequestRow { id: string; userId: string; status: "pending" | "completed"; createdAt: string; completedAt: string | null }
 export interface MediaObjectRow { key: string; organizationId: string | null; ownerUserId: string | null; mime: string; bytes: number; checksum: string; privacyClass: "product_public" | "creative_private" | "face_private"; createdAt: string }
 
+export interface RunwayLookRow {
+  id: string; organizationId: string; name: string; description: string; position: number; status: RunwayLookStatus;
+  image: ImageRef | null; pins: RunwayPin[]; createdBy: string; createdAt: string; updatedAt: string;
+}
+
 export class MemoryStore {
   profiles = new Map<string, ProfileRow>();
   organizations = new Map<string, OrganizationRow>();
@@ -104,4 +109,5 @@ export class MemoryStore {
   analytics: AnalyticsRow[] = [];
   deletionRequests: DeletionRequestRow[] = [];
   media = new Map<string, MediaObjectRow>();
+  runwayLooks = new Map<string, RunwayLookRow>();
 }

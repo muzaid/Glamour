@@ -205,3 +205,7 @@ footer.gm-footer { border-top: 1px solid var(--gm-border); padding: 32px 0; marg
   .gm-nav a { white-space: nowrap; }
   .gm-logo { font-size: 19px; }
 }
+
+/* Studio → Runway look editor */
+.gm-runway-editor { display: grid; gap: 24px; align-items: start; }
+@media (min-width: 900px) { .gm-runway-editor { grid-template-columns: minmax(240px, 360px) minmax(0, 1fr); } }

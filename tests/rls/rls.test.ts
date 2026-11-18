@@ -177,4 +177,65 @@ describe.skipIf(!url)("0004 apparel migration", () => {
       await client.query(`insert into public.photo_consents (user_id, policy_version, scope, granted) values ('00000000-0000-4000-8000-0000000000a1', 'v1', 'cloud_generation', true)`);
     } finally { await client.query("rollback"); }
   });
+
+  describe("runway looks (0005)", () => {
+    const LOOK_PUB = "60000000-0000-4000-8000-0000000000e1", LOOK_DRAFT = "60000000-0000-4000-8000-0000000000e2";
+    /** Fixtures inserted as the table owner inside the test transaction, then the role is dropped. */
+    async function withLooks<T>(user: keyof typeof U | "anon", fn: (q: (sql: string, params?: unknown[]) => Promise<pg.QueryResult>) => Promise<T>) {
+      await client.query("begin");
+      try {
+        const pub = (await client.query("select id from public.products where slug = 'velvet-matte-lipstick'")).rows[0].id;
+        await client.query(`insert into public.runway_looks (id, organization_id, name, status, image, created_by) values
+          ($1, $3, 'Public look', 'published', '{"kind":"reference","file":"model-1-640.webp"}', $4),
+          ($2, $3, 'Draft look', 'draft', null, $4)`, [LOOK_PUB, LOOK_DRAFT, ORG_L, U.lena]);
+        await client.query(`insert into public.runway_look_pins (look_id, organization_id, product_id, position, pin_left, pin_top) values
+          ($1, $3, $4, 1, 50, 20), ($1, $3, $5, 2, 50, 60), ($2, $3, $4, 1, 40, 40)`, [LOOK_PUB, LOOK_DRAFT, ORG_L, pub, DRAFT]);
+        if (user === "anon") await client.query("set local role anon");
+        else {
+          await client.query("set local role authenticated");
+          await client.query("select set_config('request.jwt.claims', $1, true)", [JSON.stringify({ sub: U[user], role: "authenticated" })]);
+        }
+        return await fn((sql, params) => client.query(sql, params as unknown[]));
+      } finally { await client.query("rollback"); }
+    }
+
+    it("anonymous shoppers see published looks and only pins to published products", async () => {
+      await withLooks("anon", async (q) => {
+        expect((await q("select name from public.runway_looks")).rows.map((r) => r.name)).toEqual(["Public look"]);
+        const pins = (await q("select product_id from public.runway_look_pins")).rows;
+        expect(pins.length).toBe(1);
+        expect(pins.some((r) => r.product_id === DRAFT)).toBe(false);
+        expect(await sqlErrQ("insert into public.runway_looks (organization_id, name, created_by) values ($1, 'x', $2)", [ORG_L, U.ava])).toMatch(/permission denied|row-level security/);
+      });
+    });
+
+    it("other tenants cannot read drafts, edit, publish, or pin into a foreign look", async () => {
+      await withLooks("omar", async (q) => {
+        expect((await q("select id from public.runway_looks where id = $1", [LOOK_DRAFT])).rowCount).toBe(0);
+        expect((await q("update public.runway_looks set name = 'pwned' where id = $1", [LOOK_PUB])).rowCount).toBe(0);
+        expect((await q("delete from public.runway_looks where id = $1", [LOOK_PUB])).rowCount).toBe(0);
+        expect(await sqlErrQ("insert into public.runway_look_pins (look_id, organization_id, product_id, position, pin_left, pin_top) values ($1, $2, $3, 3, 1, 1)", [LOOK_PUB, ORG_L, DRAFT])).toMatch(/row-level security/);
+        expect(await sqlErrQ("insert into public.runway_looks (organization_id, name, created_by) values ($1, 'x', $2)", [ORG_L, U.omar])).toMatch(/row-level security/);
+      });
+    });
+
+    it("brand manager manages own looks; agency designer cannot; inserts start as drafts", async () => {
+      await withLooks("marco", async (q) => {
+        expect((await q("select id from public.runway_looks order by name")).rowCount).toBe(2);
+        expect((await q("update public.runway_looks set name = 'Edited' where id = $1", [LOOK_DRAFT])).rowCount).toBe(1);
+        expect(await sqlErrQ("insert into public.runway_looks (organization_id, name, status, image, created_by) values ($1, 'x', 'published', '{\"kind\":\"reference\",\"file\":\"a.webp\"}', $2)", [ORG_L, U.marco])).toMatch(/row-level security/);
+        expect(await sqlErrQ("update public.runway_looks set image = '{\"kind\":\"url\",\"href\":\"https://evil.example/x.png\"}' where id = $1", [LOOK_DRAFT])).toMatch(/check constraint/);
+      });
+      await withLooks("dana", async (q) => {
+        expect(await sqlErrQ("insert into public.runway_looks (organization_id, name, created_by) values ($1, 'x', $2)", [ORG_N, U.dana])).toMatch(/row-level security/);
+      });
+    });
+
+    it("a pin cannot reference another organization's product", async () => {
+      await withLooks("lena", async (q) => {
+        const other = (await q("select id from public.products where slug = 'petal-tint'")).rows[0].id;
+        expect(await sqlErrQ("insert into public.runway_look_pins (look_id, organization_id, product_id, position, pin_left, pin_top) values ($1, $2, $3, 3, 1, 1)", [LOOK_PUB, ORG_L, other])).toMatch(/foreign key/);
+      });
+    });
+  });
 });

@@ -43,3 +43,15 @@ export async function json(req: Request): Promise<unknown> {
   if (text.length > 512 * 1024) throw new AppError("VALIDATION_FAILED", "Payload too large");
   try { return text ? JSON.parse(text) : {}; } catch { throw new AppError("VALIDATION_FAILED", "Malformed JSON"); }
 }
+
+/** Read one image file from a multipart upload ("file" field), bounded before buffering. */
+export async function imageUpload(req: Request): Promise<Uint8Array> {
+  const len = Number(req.headers.get("content-length") ?? "0");
+  if (len > 4.2 * 1024 * 1024) throw new AppError("VALIDATION_FAILED", "Images must be smaller than 4 MB");
+  let form: FormData;
+  try { form = await req.formData(); } catch { throw new AppError("VALIDATION_FAILED", "Send the image as multipart/form-data"); }
+  const file = form.get("file");
+  if (!(file instanceof Blob) || file.size === 0) throw new AppError("VALIDATION_FAILED", "Choose an image file");
+  if (file.size > 4 * 1024 * 1024) throw new AppError("VALIDATION_FAILED", "Images must be smaller than 4 MB");
+  return new Uint8Array(await file.arrayBuffer());
+}

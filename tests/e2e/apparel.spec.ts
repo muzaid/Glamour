@@ -6,7 +6,8 @@ test("clothes mirror: PDP colour/size → on-device fit on demo figure → outfi
   page.on("request", (r) => { const b = r.postDataBuffer(); if (b && b.length > 20_000) uploads.push(r.url()); });
   await signIn(page, "bea");
   await page.goto("/shop?category=apparel");
-  await expect(page.getByTestId("product-card")).toHaveCount(3);
+  // 3 Lumière Atelier pieces + 8 runway lookbook pieces.
+  await expect(page.getByTestId("product-card")).toHaveCount(11);
   await page.goto("/shop/tailored-wool-blazer");
   await page.getByRole("button", { name: "Charcoal" }).click();
   await page.getByTestId("pdp-size-M").click();

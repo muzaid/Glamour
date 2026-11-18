@@ -1,599 +1,57 @@
-/* Try the Look. — Runway (vanilla JS custom element). Generated catalog is inlined below. */
+/* Try the Look. — Runway (vanilla JS custom element). Markup and prices are rendered by the server from the live catalog. */
 (() => {
   "use strict";
-  const CATALOG = {
- "source": "https://nike-makknzjs.myshopify.com/pages/runway",
- "looks": [
-  {
-   "name": "The City Edit",
-   "description": "A charcoal knit and easy denim.",
-   "image": "https://reel-ref-try-the-look.vercel.app/assets/original-look-1.webp",
-   "products": [
-    "tatum-5-orbit-copy",
-    "tshirt",
-    "sweatshirt"
-   ]
-  },
-  {
-   "name": "Gallery Opening",
-   "description": "A clean white tee and relaxed denim.",
-   "image": "https://reel-ref-try-the-look.vercel.app/assets/original-look-5.webp",
-   "products": [
-    "tatum-5-orbit",
-    "hoodie-black",
-    "tshirt"
-   ]
-  },
-  {
-   "name": "Gallery Opening",
-   "description": "Olive knitwear. A grounded palette.",
-   "image": "https://reel-ref-try-the-look.vercel.app/assets/original-look-4.webp",
-   "products": [
-    "sweatshirt-plus",
-    "tatum-5-orbit",
-    "tshirt"
-   ]
-  },
-  {
-   "name": "Studio Day",
-   "description": "Black, white and laid-back denim.",
-   "image": "https://reel-ref-try-the-look.vercel.app/assets/original-look-6.webp",
-   "products": [
-    "hoodie-black",
-    "tatum-5-orbit-copy",
-    "tshirt"
-   ]
-  },
-  {
-   "name": "Studio Day",
-   "description": "Burgundy layers. A tailored perspective.",
-   "image": "https://reel-ref-try-the-look.vercel.app/assets/original-look-3.webp",
-   "products": [
-    "sweatshirt",
-    "tatum-5-orbit",
-    "tshirt"
-   ]
-  },
-  {
-   "name": "Studio Day",
-   "description": "A grey crew and your favourite denim.",
-   "image": "https://reel-ref-try-the-look.vercel.app/assets/original-look-2.webp",
-   "products": [
-    "hoodie",
-    "air-jordan-12-retro-copy",
-    "tshirt"
-   ]
-  }
- ],
- "items": [
-  {
-   "id": "tatum-5-orbit-copy",
-   "name": "Air Jordan 12 Retro",
-   "type": "From the original lookbook",
-   "price": 149.0,
-   "image": "https://reel-ref-try-the-look.vercel.app/assets/source-tatum-5-orbit-copy.webp",
-   "sizes": [
-    "40",
-    "41",
-    "42",
-    "43",
-    "44",
-    "45",
-    "46"
-   ],
-   "variants": [
-    {
-     "id": 57015167025457,
-     "a": true,
-     "o": [
-      "40"
-     ]
-    },
-    {
-     "id": 57015167058225,
-     "a": true,
-     "o": [
-      "41"
-     ]
-    },
-    {
-     "id": 57015167090993,
-     "a": true,
-     "o": [
-      "42"
-     ]
-    },
-    {
-     "id": 57015167123761,
-     "a": true,
-     "o": [
-      "43"
-     ]
-    },
-    {
-     "id": 57015167156529,
-     "a": true,
-     "o": [
-      "44"
-     ]
-    },
-    {
-     "id": 57015167189297,
-     "a": true,
-     "o": [
-      "45"
-     ]
-    },
-    {
-     "id": 57015167222065,
-     "a": true,
-     "o": [
-      "46"
-     ]
-    }
-   ],
-   "url": "https://nike-makknzjs.myshopify.com/products/tatum-5-orbit-copy"
-  },
-  {
-   "id": "tshirt",
-   "name": "Tshirt",
-   "type": "From the original lookbook",
-   "price": 199.0,
-   "image": "https://reel-ref-try-the-look.vercel.app/assets/source-tshirt.webp",
-   "sizes": [
-    "S",
-    "L",
-    "M",
-    "XL"
-   ],
-   "variants": [
-    {
-     "id": 56835911582001,
-     "a": true,
-     "o": [
-      "S"
-     ]
-    },
-    {
-     "id": 56835911614769,
-     "a": true,
-     "o": [
-      "L"
-     ]
-    },
-    {
-     "id": 56835911647537,
-     "a": true,
-     "o": [
-      "M"
-     ]
-    },
-    {
-     "id": 56835911680305,
-     "a": true,
-     "o": [
-      "XL"
-     ]
-    }
-   ],
-   "url": "https://nike-makknzjs.myshopify.com/products/tshirt"
-  },
-  {
-   "id": "sweatshirt",
-   "name": "Sweatshirt",
-   "type": "From the original lookbook",
-   "price": 199.0,
-   "image": "https://reel-ref-try-the-look.vercel.app/assets/source-sweatshirt.webp",
-   "sizes": [
-    "S",
-    "L",
-    "M",
-    "XL"
-   ],
-   "variants": [
-    {
-     "id": 56835806396721,
-     "a": true,
-     "o": [
-      "S"
-     ]
-    },
-    {
-     "id": 56835806429489,
-     "a": true,
-     "o": [
-      "L"
-     ]
-    },
-    {
-     "id": 56835806462257,
-     "a": true,
-     "o": [
-      "M"
-     ]
-    },
-    {
-     "id": 56835806495025,
-     "a": true,
-     "o": [
-      "XL"
-     ]
-    }
-   ],
-   "url": "https://nike-makknzjs.myshopify.com/products/sweatshirt"
-  },
-  {
-   "id": "tatum-5-orbit",
-   "name": "Tatum 5 Orbit",
-   "type": "From the original lookbook",
-   "price": 149.0,
-   "image": "https://reel-ref-try-the-look.vercel.app/assets/source-tatum-5-orbit.webp",
-   "sizes": [
-    "40",
-    "41",
-    "42",
-    "43",
-    "44",
-    "45",
-    "46"
-   ],
-   "variants": [
-    {
-     "id": 57015166730545,
-     "a": true,
-     "o": [
-      "40"
-     ]
-    },
-    {
-     "id": 57015166763313,
-     "a": true,
-     "o": [
-      "41"
-     ]
-    },
-    {
-     "id": 57015166796081,
-     "a": true,
-     "o": [
-      "42"
-     ]
-    },
-    {
-     "id": 57015166828849,
-     "a": true,
-     "o": [
-      "43"
-     ]
-    },
-    {
-     "id": 57015166861617,
-     "a": true,
-     "o": [
-      "44"
-     ]
-    },
-    {
-     "id": 57015166894385,
-     "a": true,
-     "o": [
-      "45"
-     ]
-    },
-    {
-     "id": 57015166927153,
-     "a": true,
-     "o": [
-      "46"
-     ]
-    }
-   ],
-   "url": "https://nike-makknzjs.myshopify.com/products/tatum-5-orbit"
-  },
-  {
-   "id": "hoodie-black",
-   "name": "Hoodie Black",
-   "type": "From the original lookbook",
-   "price": 199.0,
-   "image": "https://reel-ref-try-the-look.vercel.app/assets/source-hoodie-black.webp",
-   "sizes": [
-    "S",
-    "L",
-    "M",
-    "XL"
-   ],
-   "variants": [
-    {
-     "id": 56836251681073,
-     "a": true,
-     "o": [
-      "S"
-     ]
-    },
-    {
-     "id": 56836251713841,
-     "a": true,
-     "o": [
-      "L"
-     ]
-    },
-    {
-     "id": 56836251746609,
-     "a": true,
-     "o": [
-      "M"
-     ]
-    },
-    {
-     "id": 56836251779377,
-     "a": true,
-     "o": [
-      "XL"
-     ]
-    }
-   ],
-   "url": "https://nike-makknzjs.myshopify.com/products/hoodie-black"
-  },
-  {
-   "id": "sweatshirt-plus",
-   "name": "Sweatshirt Plus",
-   "type": "From the original lookbook",
-   "price": 199.0,
-   "image": "https://reel-ref-try-the-look.vercel.app/assets/source-sweatshirt-plus.webp",
-   "sizes": [
-    "S",
-    "L",
-    "M",
-    "XL"
-   ],
-   "variants": [
-    {
-     "id": 56836143743281,
-     "a": true,
-     "o": [
-      "S"
-     ]
-    },
-    {
-     "id": 56836143776049,
-     "a": true,
-     "o": [
-      "L"
-     ]
-    },
-    {
-     "id": 56836143808817,
-     "a": true,
-     "o": [
-      "M"
-     ]
-    },
-    {
-     "id": 56836143841585,
-     "a": true,
-     "o": [
-      "XL"
-     ]
-    }
-   ],
-   "url": "https://nike-makknzjs.myshopify.com/products/sweatshirt-plus"
-  },
-  {
-   "id": "hoodie",
-   "name": "Hoodie",
-   "type": "From the original lookbook",
-   "price": 199.0,
-   "image": "https://reel-ref-try-the-look.vercel.app/assets/source-hoodie.webp",
-   "sizes": [
-    "S",
-    "L",
-    "M",
-    "XL"
-   ],
-   "variants": [
-    {
-     "id": 56836002185521,
-     "a": true,
-     "o": [
-      "S"
-     ]
-    },
-    {
-     "id": 56836002218289,
-     "a": true,
-     "o": [
-      "L"
-     ]
-    },
-    {
-     "id": 56836002251057,
-     "a": true,
-     "o": [
-      "M"
-     ]
-    },
-    {
-     "id": 56836002283825,
-     "a": true,
-     "o": [
-      "XL"
-     ]
-    }
-   ],
-   "url": "https://nike-makknzjs.myshopify.com/products/hoodie"
-  },
-  {
-   "id": "air-jordan-12-retro-copy",
-   "name": "Luka 5",
-   "type": "From the original lookbook",
-   "price": 149.0,
-   "image": "https://reel-ref-try-the-look.vercel.app/assets/source-air-jordan-12-retro-copy.webp",
-   "sizes": [
-    "40",
-    "41",
-    "42",
-    "43",
-    "44",
-    "45",
-    "46"
-   ],
-   "variants": [
-    {
-     "id": 57015176364337,
-     "a": true,
-     "o": [
-      "40"
-     ]
-    },
-    {
-     "id": 57015176397105,
-     "a": true,
-     "o": [
-      "41"
-     ]
-    },
-    {
-     "id": 57015176429873,
-     "a": true,
-     "o": [
-      "42"
-     ]
-    },
-    {
-     "id": 57015176462641,
-     "a": true,
-     "o": [
-      "43"
-     ]
-    },
-    {
-     "id": 57015176495409,
-     "a": true,
-     "o": [
-      "44"
-     ]
-    },
-    {
-     "id": 57015176528177,
-     "a": true,
-     "o": [
-      "45"
-     ]
-    },
-    {
-     "id": 57015176560945,
-     "a": true,
-     "o": [
-      "46"
-     ]
-    }
-   ],
-   "url": "https://nike-makknzjs.myshopify.com/products/air-jordan-12-retro-copy"
-  }
- ]
-};
-  const BAG_KEY = "runway-styling-bag-v3";
-  const STORE_HOST = "nike-makknzjs.myshopify.com";
+  const raf2 = (fn) => requestAnimationFrame(() => requestAnimationFrame(fn));
   const RM = matchMedia("(prefers-reduced-motion: reduce)");
   const reduced = () => RM.matches;
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
-  const money = (n) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
-  const isInt = (n) => Number.isSafeInteger(n);
-  const raf2 = (fn) => requestAnimationFrame(() => requestAnimationFrame(fn));
+  const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-  /* ------------------------------------------------------------ Bag */
+  class SignInRequired extends Error {}
+
+  /* ------------------------------------------------------------ Bag (server cart) */
+  // Prices, stock and totals live on the server: the page only sends variant ids.
   const Bag = {
-    entries: [], catalog: null, byVariant: new Map(), toastTimer: 0,
-    load() {
-      try {
-        const raw = JSON.parse(localStorage.getItem(BAG_KEY) || "[]");
-        this.entries = (Array.isArray(raw) ? raw : []).filter((e) => e && isInt(e.id) && isInt(e.quantity) && e.quantity >= 1 && e.quantity <= 20).slice(0, 50);
-      } catch { this.entries = []; }
+    toastTimer: 0,
+    setCount(view) {
+      const n = view && Array.isArray(view.lines) ? view.lines.reduce((s, l) => s + (Number.isSafeInteger(l.quantity) ? l.quantity : 0), 0) : 0;
+      document.querySelectorAll("[data-cart-count]").forEach((el) => { el.textContent = String(n); });
     },
-    save() { try { localStorage.setItem(BAG_KEY, JSON.stringify(this.entries)); } catch { /* storage unavailable */ } },
-    async getCatalog() {
-      if (this.catalog) return this.catalog;
-      let c;
-      try { c = CATALOG; } catch { throw new Error("The product list could not load."); }
-      const ok = c && Array.isArray(c.items) && c.items.every((it) => typeof it.id === "string" && typeof it.name === "string" && Number.isFinite(it.price) && it.price >= 0 &&
-        Array.isArray(it.variants) && it.variants.every((v) => isInt(v.id) && typeof v.a === "boolean" && Array.isArray(v.o) && v.o.every((o) => typeof o === "string")));
-      if (!ok) throw new Error("The product list is unavailable.");
-      this.catalog = c;
-      for (const it of c.items) for (const v of it.variants) this.byVariant.set(v.id, { item: it, variant: v });
-      return c;
-    },
-    async add(items) {
-      await this.getCatalog();
-      for (const { id } of items) { const m = this.byVariant.get(id); if (!m || !m.variant.a) throw new Error("Please choose an available size."); }
+    async add(items, signedIn) {
+      if (!signedIn) throw new SignInRequired();
+      for (const { id } of items) if (typeof id !== "string" || !UUID.test(id)) throw new Error("Please choose an available size.");
+      let view = null;
       for (const { id, quantity } of items) {
-        const ex = this.entries.find((e) => e.id === id);
-        if (ex) ex.quantity = Math.min(20, ex.quantity + (quantity || 1));
-        else if (this.entries.length < 50) this.entries.push({ id, quantity: quantity || 1 });
+        const res = await fetch("/api/v1/cart/items", {
+          method: "POST", credentials: "same-origin",
+          headers: { "content-type": "application/json", accept: "application/json" },
+          body: JSON.stringify({ productVariantId: id, quantity: quantity || 1 }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.status === 401) throw new SignInRequired();
+        if (!res.ok) throw new Error((data.error && data.error.message) || "Couldn’t add to bag.");
+        view = data;
       }
-      this.save(); this.render();
-      this.toast(items.length > 1 ? "Look saved to your styling bag" : "Piece saved to your styling bag");
+      if (view) this.setCount(view);
+      this.toast(items.length > 1 ? "Look added to your bag" : "Added to your bag");
     },
-    remove(id) { this.entries = this.entries.filter((e) => e.id !== id); this.save(); this.render(); },
-    count() { return this.entries.reduce((n, e) => n + e.quantity, 0); },
     toast(msg) {
       const el = document.getElementById("bag-status"); if (!el) return;
       el.textContent = msg; el.classList.add("is-on");
       clearTimeout(this.toastTimer); this.toastTimer = setTimeout(() => el.classList.remove("is-on"), 2500);
     },
-    render() {
-      document.querySelectorAll("[data-cart-count]").forEach((el) => { el.textContent = String(this.count()); });
-      const list = document.getElementById("bag-items"), total = document.getElementById("bag-total"), exp = document.getElementById("export-bag");
-      if (!list) return;
-      list.replaceChildren();
-      const rows = this.entries.map((e) => ({ e, m: this.byVariant.get(e.id) })).filter((r) => r.m);
-      if (!rows.length) {
-        const p = document.createElement("p"); p.className = "bag-note"; p.textContent = "Your styling bag is empty. Choose a size beside a piece to save it."; list.append(p);
-        total.textContent = ""; exp.disabled = true; return;
-      }
-      let sum = 0;
-      for (const { e, m } of rows) {
-        const url = new URL(m.item.url);
-        if (url.hostname !== STORE_HOST) throw new Error("Unexpected product link");
-        sum += m.item.price * e.quantity;
-        const row = document.createElement("div"); row.className = "bag-row";
-        const img = document.createElement("img"); img.src = m.item.image; img.alt = m.item.name; img.width = 60; img.height = 80; img.loading = "lazy";
-        const info = document.createElement("div");
-        const h = document.createElement("h3"); h.textContent = m.item.name;
-        const p = document.createElement("p"); p.textContent = `Size ${m.variant.o[0]} · Quantity ${e.quantity} · ${money(m.item.price)}`;
-        const a = document.createElement("a"); a.href = url.href; a.target = "_blank"; a.rel = "noopener noreferrer"; a.textContent = "View original piece ↗";
-        info.append(h, p, a);
-        const rm = document.createElement("button"); rm.type = "button"; rm.textContent = "×"; rm.setAttribute("aria-label", `Remove ${m.item.name}`);
-        rm.addEventListener("click", () => this.remove(e.id));
-        row.append(img, info, rm); list.append(row);
-      }
-      total.textContent = `Reference subtotal ${money(sum)}`;
-      exp.disabled = false;
-    },
-    exportText() {
-      const lines = this.entries.map((e) => this.byVariant.get(e.id)).filter(Boolean).map((m, i) => `${m.item.name} · Size ${m.variant.o[0]} · Quantity ${this.entries[i].quantity}\n${m.item.url}`);
-      return ["RUNWAY — STYLING SHORTLIST", "Reference prices; no order or payment has been placed.", "", ...lines].join("\n\n");
-    },
   };
 
-  function initBagUi() {
-    Bag.load();
-    Bag.getCatalog().then(() => Bag.render()).catch(() => Bag.render());
-    const dlg = document.getElementById("bag-dialog");
-    document.getElementById("open-bag")?.addEventListener("click", async () => {
-      try { await Bag.getCatalog(); } catch { /* render shows empty */ }
-      Bag.render(); if (!dlg.open) dlg.showModal();
-    });
-    document.getElementById("close-bag")?.addEventListener("click", () => dlg.close());
-    dlg?.addEventListener("click", (ev) => {
-      const r = dlg.getBoundingClientRect();
-      if (ev.clientX < r.left || ev.clientX > r.right || ev.clientY < r.top || ev.clientY > r.bottom) dlg.close();
-    });
-    document.getElementById("export-bag")?.addEventListener("click", () => {
-      if (!Bag.entries.length) return;
-      const url = URL.createObjectURL(new Blob([Bag.exportText()], { type: "text/plain;charset=utf-8" }));
-      const a = document.createElement("a"); a.href = url; a.download = "runway-outfit-shortlist.txt"; document.body.append(a); a.click(); a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-    });
+  /** Write a message, with a sign-in link when the shopper is signed out. */
+  function setMsg(el, section, err) {
+    el.replaceChildren();
+    if (err instanceof SignInRequired) {
+      el.append(document.createTextNode((section.dataset.msgSignin || "Sign in to add pieces to your bag.") + " "));
+      const a = document.createElement("a");
+      a.href = "/sign-in?next=" + encodeURIComponent(location.pathname);
+      a.textContent = "Sign in";
+      el.append(a);
+    } else el.textContent = (err && err.message) || section.dataset.msgError;
   }
 
   /* ------------------------------------------------------------ Section */
@@ -608,7 +66,8 @@
     qa(s, root = this) { return [...root.querySelectorAll(s)]; }
 
     setup() {
-      this.n = 6; this.N = this.n * Math.ceil(8 / this.n);
+      this.n = this.qa("[data-rw-hero]").length; if (!this.n) return;
+      this.N = this.n * Math.ceil(8 / this.n);
       const feel = FEEL[this.dataset.feel] || FEEL.balanced;
       this.K = feel.K; this.C = 2 * Math.sqrt(this.K);
       this.speed = Number(this.dataset.speed) || 5000;
@@ -1053,12 +512,12 @@
     async confirm(card) {
       if (!card || card.classList.contains("is-added") || card.classList.contains("is-loading")) return;
       card.dataset.touched = "1";
-      const id = Number(card.dataset.selected); if (!id) return;
+      const id = card.dataset.selected; if (!id) return;
       const panel = card.closest("[data-rw-panel]"), msg = panel.querySelector("[data-rw-msg]");
       msg.textContent = "";
       card.classList.add("is-loading");
-      try { await Bag.add([{ id, quantity: 1 }]); this.markAdded(card); this.checkComplete(panel); }
-      catch { card.classList.remove("is-loading"); msg.textContent = this.dataset.msgError; }
+      try { await Bag.add([{ id, quantity: 1 }], this.dataset.signedIn === "true"); this.markAdded(card); this.checkComplete(panel); }
+      catch (err) { card.classList.remove("is-loading"); setMsg(msg, this, err); }
     }
     markAdded(card) {
       card.classList.remove("is-loading");
@@ -1070,20 +529,22 @@
     }
     checkComplete(panel) {
       const cards = [...panel.querySelectorAll("[data-rw-card]")];
-      if (cards.length >= 2 && cards.every((c) => c.classList.contains("is-added"))) { panel.classList.add("is-complete"); panel.querySelector("[data-rw-msg]").textContent = ""; }
+      if (cards.length >= 1 && cards.every((c) => c.classList.contains("is-added"))) { panel.classList.add("is-complete"); panel.querySelector("[data-rw-msg]").textContent = ""; }
     }
     async addAll() {
       const panel = this.panels[this.index], cta = panel.querySelector("[data-rw-all]"), msg = panel.querySelector("[data-rw-msg]");
       if (panel.classList.contains("is-complete") || cta.classList.contains("is-loading")) return;
       msg.textContent = "";
       const cards = [...panel.querySelectorAll("[data-rw-card]")].filter((c) => !c.classList.contains("is-added"));
-      const ready = cards.filter((c) => c.dataset.variantId || (c.dataset.touched === "1" && Number(c.dataset.selected)));
+      const ready = cards.filter((c) => c.dataset.variantId || (c.dataset.touched === "1" && c.dataset.selected));
       const pending = cards.filter((c) => !ready.includes(c));
       if (ready.length) {
         cta.classList.add("is-loading"); ready.forEach((c) => c.classList.add("is-loading"));
-        try { await Bag.add(ready.map((c) => ({ id: Number(c.dataset.variantId || c.dataset.selected), quantity: 1 }))); ready.forEach((c) => this.markAdded(c)); }
-        catch { ready.forEach((c) => c.classList.remove("is-loading")); msg.textContent = this.dataset.msgError; }
+        let failed = false;
+        try { await Bag.add(ready.map((c) => ({ id: c.dataset.variantId || c.dataset.selected, quantity: 1 })), this.dataset.signedIn === "true"); ready.forEach((c) => this.markAdded(c)); }
+        catch (err) { failed = true; ready.forEach((c) => c.classList.remove("is-loading")); setMsg(msg, this, err); }
         cta.classList.remove("is-loading");
+        if (failed) return;
       }
       if (pending.length) {
         (this.mobile ? pending.slice(0, 1) : pending).forEach((c) => this.openPicker(c, false));
@@ -1204,6 +665,5 @@
     }
   }
 
-  initBagUi();
   if (!customElements.get("runway-section")) customElements.define("runway-section", RunwaySection);
 })();

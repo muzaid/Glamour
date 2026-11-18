@@ -1,8 +1,9 @@
 import { BUILTIN_ASSETS, GARMENT_ASSET } from "@glamotion/motion";
 
 /** Rights-cleared vector product illustration (no photography in the demo). */
-export function ProductArt({ category, hex, size = 160, label }: { category: string; hex: string; size?: number; label: string }) {
-  const asset = BUILTIN_ASSETS[GARMENT_ASSET[category as keyof typeof GARMENT_ASSET] ?? (category === "blush" || category === "eyeshadow" ? "asset:blush-compact" : "asset:lipstick-bullet")]!;
+export function ProductArt({ category, hex, size = 160, label, imageUrl }: { category: string; hex: string; size?: number; label: string; imageUrl?: string | null }) {
+  if (imageUrl) return <img src={imageUrl} alt={label} width={size} height={size} loading="lazy" style={{ display: "block", width: "100%", maxWidth: size, height: "auto", aspectRatio: "1", objectFit: "contain", margin: "0 auto" }} />;
+  const asset = BUILTIN_ASSETS[GARMENT_ASSET[category as keyof typeof GARMENT_ASSET] ?? (category === "bottoms" || category === "footwear" ? "asset:garment-top" : category === "blush" || category === "eyeshadow" ? "asset:blush-compact" : "asset:lipstick-bullet")]!;
   const [w, h] = asset.viewBox;
   const uid = `${category}-${hex.slice(1)}`;
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${label.replace(/"/g, "")}" viewBox="0 0 ${w} ${h}" width="${(size * w) / Math.max(w, h)}" height="${(size * h) / Math.max(w, h)}">${asset.svg(hex).replace(/gm-/g, `gm-${uid}-`)}</svg>`;

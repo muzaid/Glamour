@@ -2,10 +2,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { isApparel, type Product } from "@glamotion/contracts";
+import { isWearable, type Product } from "@glamotion/contracts";
 import { PRESETS } from "@glamotion/motion";
 import { StatusChip } from "@glamotion/ui";
 import { apiFetch, money } from "../client";
+import { uploadImage } from "./upload";
 
 export function ProductEditor({ product: initial, orgId, orgSlug, canWrite, canPublish, canCreate, projects }: { product: Product; orgId: string; orgSlug: string; canWrite: boolean; canPublish: boolean; canCreate: boolean; projects: { id: string; name: string }[] }) {
   const [p, setP] = useState(initial);
@@ -27,6 +28,13 @@ export function ProductEditor({ product: initial, orgId, orgSlug, canWrite, canP
     const ok = await call(`${base}/variants`, "POST", { sku: String(f.get("sku")).toUpperCase(), shadeName: f.get("shadeName"), hex: f.get("hex"), finish: f.get("finish"), priceMinor: Math.round(Number(f.get("price")) * 100), currency: "USD", initialStock: Number(f.get("stock")), sizeLabel: f.get("size") ? String(f.get("size")) : undefined });
     if (ok) form.reset();
   }
+  async function onImage(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]; e.target.value = "";
+    if (!file) return;
+    setErr(null);
+    const r = await uploadImage<{ data: Product }>(`${base}/image`, file);
+    if (r.ok) setP(r.data.data); else setErr(r.error.message);
+  }
   async function createMotion() {
     setErr(null);
     const r = await apiFetch<{ data: { id: string } }>(`/api/v1/orgs/${orgId}/compositions`, { method: "POST", body: { productId: p.id, preset, aspectRatio: "9:16", projectId: projectId || null } });
@@ -43,8 +51,19 @@ export function ProductEditor({ product: initial, orgId, orgSlug, canWrite, canP
         </div>
       </div>
       {err && <div className="gm-alert gm-alert-error" role="alert">{err}</div>}
+      <section className="gm-card gm-row" style={{ gap: 20, alignItems: "center" }}>
+        {p.imageUrl ? <img src={p.imageUrl} alt={p.imageAlt} width={96} height={128} style={{ objectFit: "contain", background: "var(--gm-surface-2)" }} data-testid="product-image" /> : <span style={{ width: 96, height: 128, background: "var(--gm-surface-2)", display: "inline-block" }} />}
+        <div className="gm-stack" style={{ gap: 8 }}>
+          <h2 style={{ margin: 0 }}>Product photo</h2>
+          <p className="gm-muted gm-small" style={{ margin: 0 }}>Used in the shop and on the runway. PNG, JPEG or WebP up to 4 MB; a plain or transparent background works best.</p>
+          {canWrite && <div className="gm-row">
+            <label className="gm-btn gm-btn-ghost gm-btn-sm">{p.imageUrl ? "Replace photo" : "Upload photo"}<input type="file" accept="image/png,image/jpeg,image/webp" hidden onChange={onImage} data-testid="product-photo" /></label>
+            {p.imageUrl && <button className="gm-btn gm-btn-ghost gm-btn-sm" onClick={() => call(`${base}/image`, "DELETE", undefined)}>Remove</button>}
+          </div>}
+        </div>
+      </section>
       <section className="gm-card">
-        <h2>Shades & inventory</h2>
+        <h2>{isWearable(p.category) ? "Sizes & inventory" : "Shades & inventory"}</h2>
         <div className="gm-table-wrap"><table className="gm-table">
           <thead><tr><th>Shade</th><th>SKU</th><th>Finish</th><th>Price</th><th>Available</th>{canWrite && <th>Adjust</th>}</tr></thead>
           <tbody>{p.variants.map((v) => (
@@ -57,8 +76,8 @@ export function ProductEditor({ product: initial, orgId, orgSlug, canWrite, canP
         </table></div>
         {canWrite && (
           <form onSubmit={addVariant} className="gm-row" style={{ marginTop: 16, alignItems: "end" }} aria-label="Add shade">
-            {isApparel(p.category) && <div><label htmlFor="size">Size</label><input id="size" name="size" className="gm-input" required pattern="[A-Za-z0-9./ \-]{1,12}" style={{ width: 90 }} placeholder="M" data-testid="variant-size" /></div>}
-            <div><label htmlFor="shadeName">{isApparel(p.category) ? "Colour" : "Shade name"}</label><input id="shadeName" name="shadeName" className="gm-input" required maxLength={80} data-testid="variant-name" /></div>
+            {isWearable(p.category) && <div><label htmlFor="size">Size</label><input id="size" name="size" className="gm-input" required pattern="[A-Za-z0-9./ \-]{1,12}" style={{ width: 90 }} placeholder="M" data-testid="variant-size" /></div>}
+            <div><label htmlFor="shadeName">{isWearable(p.category) ? "Colour" : "Shade name"}</label><input id="shadeName" name="shadeName" className="gm-input" required maxLength={80} data-testid="variant-name" /></div>
             <div><label htmlFor="sku">SKU</label><input id="sku" name="sku" className="gm-input" required pattern="[A-Za-z0-9][A-Za-z0-9_\-]+" data-testid="variant-sku" /></div>
             <div><label htmlFor="hex">Colour</label><input id="hex" name="hex" type="color" className="gm-input" defaultValue="#b23a48" style={{ width: 70, padding: 4 }} data-testid="variant-hex" /></div>
             <div><label htmlFor="finish">Finish</label><select id="finish" name="finish" className="gm-input">{["matte", "satin", "gloss", "shimmer", "metallic", "natural"].map((f) => <option key={f}>{f}</option>)}</select></div>

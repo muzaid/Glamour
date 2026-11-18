@@ -32,7 +32,7 @@ export type Role = z.infer<typeof Role>;
 export const ProductStatus = z.enum(["draft", "in_review", "published", "archived"]);
 export type ProductStatus = z.infer<typeof ProductStatus>;
 /** Product category. Name kept for compatibility; includes apparel since the clothing addendum (ADR-010). */
-export const CosmeticCategory = z.enum(["lipstick", "lip_gloss", "blush", "eyeshadow", "eyeliner", "foundation", "skincare", "fragrance", "top", "outerwear", "dress"]);
+export const CosmeticCategory = z.enum(["lipstick", "lip_gloss", "blush", "eyeshadow", "eyeliner", "foundation", "skincare", "fragrance", "top", "outerwear", "dress", "bottoms", "footwear"]);
 export type CosmeticCategory = z.infer<typeof CosmeticCategory>;
 export const ProductCategory = CosmeticCategory;
 export type ProductCategory = CosmeticCategory;
@@ -40,6 +40,9 @@ export const ApparelCategory = z.enum(["top", "outerwear", "dress"]);
 export type ApparelCategory = z.infer<typeof ApparelCategory>;
 export const APPAREL_CATEGORIES: readonly ApparelCategory[] = ApparelCategory.options;
 export const isApparel = (c: string): c is ApparelCategory => (APPAREL_CATEGORIES as readonly string[]).includes(c);
+/** Everything that is worn and sold by size (try-on overlays exist only for ApparelCategory). */
+export const WEARABLE_CATEGORIES: readonly CosmeticCategory[] = ["top", "outerwear", "dress", "bottoms", "footwear"];
+export const isWearable = (c: string): boolean => (WEARABLE_CATEGORIES as readonly string[]).includes(c);
 const SIZE_RANK = ["XXS", "XS", "S", "M", "L", "XL", "XXL", "3XL"];
 /** Sort sizes in wearing order (XS < S < M …), numeric sizes ascending, unknown labels last. */
 export const compareSizes = (a: string, b: string): number => {
@@ -99,9 +102,60 @@ export const Product = z.object({
   warnings: z.string().max(2000).default(""),
   status: ProductStatus,
   imageAlt: z.string().max(300).default(""),
+  /** Packshot URL (public catalog media or the reference lookbook host); null → vector illustration. */
+  imageUrl: z.string().nullable().default(null),
   variants: z.array(ProductVariant),
 });
 export type Product = z.infer<typeof Product>;
+
+// ---------------------------------------------------------------- Catalog images
+/** Host of the original "Try the Look" lookbook art (allow-listed in the CSP). */
+export const REFERENCE_ASSET_BASE = "https://reel-ref-try-the-look.vercel.app/assets/";
+const ReferenceFile = z.string().regex(/^[a-z0-9][a-z0-9-]{0,80}\.(webp|png|jpg)$/);
+const MediaKey = z.string().regex(/^catalog\/[0-9a-f-]{36}\.(png|jpg|webp)$/);
+/** Where an image lives. Never an arbitrary URL. */
+export const ImageRef = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("media"), key: MediaKey }),
+  z.object({ kind: z.literal("reference"), file: ReferenceFile, large: ReferenceFile.optional() }),
+]);
+export type ImageRef = z.infer<typeof ImageRef>;
+export const CATALOG_IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp"] as const;
+export const CATALOG_IMAGE_MAX_BYTES = 4 * 1024 * 1024;
+
+// ---------------------------------------------------------------- Runway looks
+export const RunwayLookStatus = z.enum(["draft", "published"]);
+export type RunwayLookStatus = z.infer<typeof RunwayLookStatus>;
+export const RunwayPin = z.object({
+  productId: Uuid,
+  /** Pin position as a percentage of the model image box. */
+  left: z.number().min(0).max(100),
+  top: z.number().min(0).max(100),
+  tag: z.string().trim().max(16).nullable().default(null),
+});
+export type RunwayPin = z.infer<typeof RunwayPin>;
+export const RUNWAY_MAX_PINS = 6;
+export const CreateRunwayLookInput = z.object({
+  name: z.string().trim().min(1).max(60),
+  description: z.string().trim().max(200).default(""),
+});
+export const UpdateRunwayLookInput = z.object({
+  name: z.string().trim().min(1).max(60).optional(),
+  description: z.string().trim().max(200).optional(),
+  position: z.number().int().min(0).max(999).optional(),
+  pins: z.array(RunwayPin).max(RUNWAY_MAX_PINS).optional(),
+  status: RunwayLookStatus.optional(),
+});
+export interface RunwayLook {
+  id: string; organizationId: string; name: string; description: string; position: number; status: RunwayLookStatus;
+  imageUrl: string | null; pins: RunwayPin[]; createdAt: string; updatedAt: string;
+}
+/** Public, server-priced runway feed (only published looks and published products). */
+export interface RunwayFeedPiece {
+  n: number; productId: string; slug: string; title: string; brandName: string; tag: string | null; left: number; top: number;
+  imageUrl: string | null; optionName: string; price: Money;
+  variants: { id: string; label: string; available: boolean; price: Money }[];
+}
+export interface RunwayFeedLook { id: string; name: string; description: string; imageUrl: string; imageLargeUrl: string | null; pieces: RunwayFeedPiece[] }
 
 export const CreateProductInput = z.object({
   brandId: Uuid,
