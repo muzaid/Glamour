@@ -5,7 +5,7 @@
  */
 import type {
   CosmeticCategory, Finish, MotionComposition, OrderStatus, ProductStatus, ProjectStatus, RenderStatus, Role,
-  TryOnRecipeV1, WorkflowStatus, BriefInput, ImageRef, RunwayLookStatus, RunwayPin,
+  TryOnRecipeV1, WorkflowStatus, BriefInput, ImageRef, RunwayLookStatus, RunwayPin, DropColour,
 } from "@glamotion/contracts";
 
 export interface ProfileRow { id: string; displayName: string; email: string; isPlatformAdmin: boolean; createdAt: string; deletedAt: string | null }
@@ -71,6 +71,12 @@ export interface RunwayLookRow {
   image: ImageRef | null; pins: RunwayPin[]; createdBy: string; createdAt: string; updatedAt: string;
 }
 
+export interface DropRowData { image: ImageRef | null; colours: DropColour[] }
+export interface DropPostRow {
+  id: string; organizationId: string; title: string; position: number; status: RunwayLookStatus;
+  top: DropRowData; bottom: DropRowData; createdBy: string; createdAt: string; updatedAt: string;
+}
+
 export class MemoryStore {
   profiles = new Map<string, ProfileRow>();
   organizations = new Map<string, OrganizationRow>();
@@ -110,4 +116,5 @@ export class MemoryStore {
   deletionRequests: DeletionRequestRow[] = [];
   media = new Map<string, MediaObjectRow>();
   runwayLooks = new Map<string, RunwayLookRow>();
+  dropPosts = new Map<string, DropPostRow>();
 }

@@ -8,7 +8,7 @@ const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' blob: data: https://reel-ref-try-the-look.vercel.app",
+  "img-src 'self' blob: data: https://reel-ref-try-the-look.vercel.app https://images.higgs.ai",
   "media-src 'self' blob:",
   "connect-src 'self' https://storage.googleapis.com",
   "worker-src 'self' blob:",

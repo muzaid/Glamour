@@ -1,4 +1,4 @@
-import { CreateProductInput, CreateVariantInput, isWearable, REFERENCE_ASSET_BASE, type ImageRef, type Product, type ProductStatus } from "@glamotion/contracts";
+import { CreateProductInput, CreateVariantInput, isWearable, REFERENCE_ASSET_BASE, higgsImageUrl, type ImageRef, type Product, type ProductStatus } from "@glamotion/contracts";
 import type { Ctx } from "./context";
 import { requireOrgCap } from "./context";
 import { AppError, notFound } from "./errors";
@@ -16,6 +16,7 @@ export function availableUnits(ctx: Ctx, variantId: string): number {
 export function imageUrl(ref: ImageRef | null, size: "default" | "large" = "default"): string | null {
   if (!ref) return null;
   if (ref.kind === "reference") return REFERENCE_ASSET_BASE + (size === "large" && ref.large ? ref.large : ref.file);
+  if (ref.kind === "higgs") return higgsImageUrl(ref.path);
   return `/api/v1/catalog-media/${ref.key}`;
 }
 
@@ -211,5 +212,6 @@ export function canReadCatalogMedia(ctx: Ctx, key: string): boolean {
   const activeOrg = ctx.store.organizations.get(meta.organizationId)?.status === "active";
   if (activeOrg && [...ctx.store.products.values()].some((p) => p.status === "published" && uses(p.image))) return true;
   if (activeOrg && [...ctx.store.runwayLooks.values()].some((l) => l.status === "published" && uses(l.image))) return true;
+  if (activeOrg && [...ctx.store.dropPosts.values()].some((d) => d.status === "published" && (uses(d.top.image) || uses(d.bottom.image)))) return true;
   try { requireOrgCap(ctx, meta.organizationId, "org.read"); return true; } catch { return false; }
 }

@@ -1,5 +1,6 @@
 import type { Finish, CosmeticCategory, Role } from "@glamotion/contracts";
 import { MemoryStore } from "./store";
+import { DEFAULT_BOTS, DEFAULT_TOPS } from "./drops";
 
 /**
  * Clearly labelled FICTIONAL demo fixtures (spec §02), plus the owner's own
@@ -111,6 +112,7 @@ export function seedDemo(store = new MemoryStore()): MemoryStore {
   apparel("tailored-wool-blazer", "Tailored Wool Blazer", "outerwear", 70, 24800, [["CML", "Camel", "#B9875A"], ["CHR", "Charcoal", "#3B3A40"]], ["S", "M", "L"], "A single-breasted blazer with a softly structured shoulder. Demo product — fictional label.");
   apparel("satin-slip-dress", "Satin Slip Dress", "dress", 80, 16800, [["CHP", "Champagne", "#D9C3A0"], ["EMR", "Emerald", "#1F5F4A"]], ["XS", "S", "M", "L"], "A bias-cut slip dress with adjustable straps. Demo product — fictional label.");
   seedRunway(store, at);
+  seedDrops(store, at);
   return store;
 }
 
@@ -166,5 +168,16 @@ function seedRunway(store: MemoryStore, at: (min: number) => string) {
       pins: pins.map(([key, left, top, tag]) => ({ productId: ids[key]!, left, top, tag })),
       createdBy: DEMO_USERS.lena.id, createdAt: at(200 + i), updatedAt: at(200 + i),
     });
+  });
+}
+
+/** The "Arriving Tomorrow" drop post: white hoodie + white sweat shorts, recoloured in the browser. */
+function seedDrops(store: MemoryStore, at: (min: number) => string) {
+  const id = sid("70000000-0000-4000-8000-");
+  store.dropPosts.set(id, {
+    id, organizationId: DEMO_ORGS.lumiere.id, title: "ARRIVING TOMORROW", position: 0, status: "published",
+    top: { image: { kind: "higgs", path: "user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261106_065532_0fd0b9b0-7f8e-4519-b490-6478519b5186.png" }, colours: DEFAULT_TOPS.map((c) => ({ ...c })) },
+    bottom: { image: { kind: "higgs", path: "user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261106_065534_5ab4e8d0-8d00-42b4-b0ac-6dc60ea7aac0.png" }, colours: DEFAULT_BOTS.map((c) => ({ ...c })) },
+    createdBy: DEMO_USERS.lena.id, createdAt: at(300), updatedAt: at(300),
   });
 }

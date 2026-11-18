@@ -24,6 +24,7 @@ export default async function StudioLayout({ children, params }: { children: Rea
         <Link href={`${base}/overview`}>Overview</Link>
         <Link href={`${base}/products`}>Products</Link>
         <Link href={`${base}/runway`}>Runway</Link>
+        <Link href={`${base}/drops`}>Drops</Link>
         <Link href={`${base}/projects`}>Projects</Link>
         <Link href={`${base}/campaigns`}>Campaigns & agents</Link>
       </nav>

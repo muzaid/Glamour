@@ -111,12 +111,16 @@ export type Product = z.infer<typeof Product>;
 // ---------------------------------------------------------------- Catalog images
 /** Host of the original "Try the Look" lookbook art (allow-listed in the CSP). */
 export const REFERENCE_ASSET_BASE = "https://reel-ref-try-the-look.vercel.app/assets/";
+/** Generated garment cut-outs, served through the images.higgs.ai proxy (sends CORS, usable as CSS masks). */
+export const HIGGS_ORIGIN = "https://d8j0ntlcm91z4.cloudfront.net/";
+export const higgsImageUrl = (path: string) => `https://images.higgs.ai/?default=1&output=webp&url=${encodeURIComponent(HIGGS_ORIGIN + path)}&w=1200&q=88`;
 const ReferenceFile = z.string().regex(/^[a-z0-9][a-z0-9-]{0,80}\.(webp|png|jpg)$/);
 const MediaKey = z.string().regex(/^catalog\/[0-9a-f-]{36}\.(png|jpg|webp)$/);
 /** Where an image lives. Never an arbitrary URL. */
 export const ImageRef = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("media"), key: MediaKey }),
   z.object({ kind: z.literal("reference"), file: ReferenceFile, large: ReferenceFile.optional() }),
+  z.object({ kind: z.literal("higgs"), path: z.string().regex(/^user_[A-Za-z0-9]{1,64}\/hf_[A-Za-z0-9_-]{1,100}\.png$/) }),
 ]);
 export type ImageRef = z.infer<typeof ImageRef>;
 export const CATALOG_IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp"] as const;
@@ -395,3 +399,25 @@ export const AnalyticsEvent = z.object({
   name: AnalyticsEventName,
   props: z.record(z.union([z.string().max(120), z.number(), z.boolean()])).refine((p) => Object.keys(p).length <= 12, "too many props"),
 });
+
+// ---------------------------------------------------------------- Drop posts
+/** "Arriving Tomorrow" mix-and-match teaser: two white cut-outs recoloured in code. */
+export const DropRowKey = z.enum(["top", "bottom"]);
+export type DropRowKey = z.infer<typeof DropRowKey>;
+export const DropColour = z.object({ name: z.string().trim().min(1).max(20), hex: z.string().regex(/^#[0-9A-Fa-f]{6}$/) });
+export type DropColour = z.infer<typeof DropColour>;
+export const DROP_MAX_COLOURS = 12;
+export const DropColours = z.array(DropColour).min(1).max(DROP_MAX_COLOURS);
+export const CreateDropInput = z.object({ title: z.string().trim().min(1).max(40) });
+export const UpdateDropInput = z.object({
+  title: z.string().trim().min(1).max(40).optional(),
+  position: z.number().int().min(0).max(999).optional(),
+  status: RunwayLookStatus.optional(),
+  topColours: DropColours.optional(),
+  bottomColours: DropColours.optional(),
+});
+export interface DropRowView { imageUrl: string | null; colours: DropColour[] }
+export interface DropPost {
+  id: string; organizationId: string; title: string; position: number; status: RunwayLookStatus;
+  top: DropRowView; bottom: DropRowView; createdAt: string; updatedAt: string;
+}

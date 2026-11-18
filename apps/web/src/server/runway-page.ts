@@ -89,7 +89,7 @@ export function renderRunwayPage(looks: RunwayFeedLook[], viewer: { signedIn: bo
   const sub = `${NUM_WORDS[n] ?? n} look${n === 1 ? "" : "s"}, styled head to toe. Tap a pin to see the piece.`;
   const header = `<header class="site-header shopify-section-group-header-group">
 <a href="/" class="brand" aria-label="GLAMOTION home">GLAM<span>O</span>TION</a>
-<nav aria-label="Main navigation"><a href="/shop">Shop</a><a href="/try-on">Try-on</a><a href="/runway" aria-current="page">Runway</a></nav>
+<nav aria-label="Main navigation"><a href="/shop">Shop</a><a href="/try-on">Try-on</a><a href="/runway" aria-current="page">Runway</a><a href="/drop">Drop</a></nav>
 <a id="open-bag" href="/cart" aria-label="Open bag">${BAG}<span data-cart-count>${viewer.bagCount}</span></a>
 </header>`;
   const section = n === 0

@@ -238,4 +238,45 @@ describe.skipIf(!url)("0004 apparel migration", () => {
       });
     });
   });
+
+  describe("drop posts (0006)", () => {
+    const D_PUB = "70000000-0000-4000-8000-0000000000e1", D_DRAFT = "70000000-0000-4000-8000-0000000000e2";
+    const COLOURS = '[{"name":"sky","hex":"#8dd2ef"}]';
+    const IMG = '{"kind":"higgs","path":"user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261106_065532_0fd0b9b0-7f8e-4519-b490-6478519b5186.png"}';
+    async function withDrops<T>(user: keyof typeof U | "anon", fn: (q: (sql: string, params?: unknown[]) => Promise<pg.QueryResult>) => Promise<T>) {
+      await client.query("begin");
+      try {
+        await client.query(`insert into public.drop_posts (id, organization_id, title, status, top_image, top_colours, bottom_image, bottom_colours, created_by) values
+          ($1, $3, 'ARRIVING TOMORROW', 'published', $5, $6, $5, $6, $4), ($2, $3, 'SECRET DRAFT', 'draft', null, $6, null, $6, $4)`, [D_PUB, D_DRAFT, ORG_L, U.lena, IMG, COLOURS]);
+        if (user === "anon") await client.query("set local role anon");
+        else {
+          await client.query("set local role authenticated");
+          await client.query("select set_config('request.jwt.claims', $1, true)", [JSON.stringify({ sub: U[user], role: "authenticated" })]);
+        }
+        return await fn((sql, params) => client.query(sql, params as unknown[]));
+      } finally { await client.query("rollback"); }
+    }
+    it("anonymous visitors see only published drops and cannot write", async () => {
+      await withDrops("anon", async (q) => {
+        expect((await q("select title from public.drop_posts")).rows.map((r) => r.title)).toEqual(["ARRIVING TOMORROW"]);
+        expect(await sqlErrQ("insert into public.drop_posts (organization_id, title, top_colours, bottom_colours, created_by) values ($1, 'x', $2, $2, $3)", [ORG_L, COLOURS, U.ava])).toMatch(/permission denied|row-level security/);
+      });
+    });
+    it("other tenants cannot read drafts or edit; brand manager can; bad colours and URLs are rejected", async () => {
+      await withDrops("omar", async (q) => {
+        expect((await q("select id from public.drop_posts where id = $1", [D_DRAFT])).rowCount).toBe(0);
+        expect((await q("update public.drop_posts set title = 'pwned' where id = $1", [D_PUB])).rowCount).toBe(0);
+        expect((await q("delete from public.drop_posts where id = $1", [D_PUB])).rowCount).toBe(0);
+      });
+      await withDrops("marco", async (q) => {
+        expect((await q("update public.drop_posts set title = 'NEW DROP' where id = $1", [D_DRAFT])).rowCount).toBe(1);
+        expect(await sqlErrQ("update public.drop_posts set top_colours = '[{\"name\":\"x\",\"hex\":\"red\"}]' where id = $1", [D_DRAFT])).toMatch(/check constraint/);
+        expect(await sqlErrQ("update public.drop_posts set top_image = '{\"kind\":\"higgs\",\"path\":\"../../evil.png\"}' where id = $1", [D_DRAFT])).toMatch(/check constraint/);
+        expect(await sqlErrQ("update public.drop_posts set status = 'published' where id = $1", [D_DRAFT])).toMatch(/check constraint/);
+      });
+      await withDrops("dana", async (q) => {
+        expect(await sqlErrQ("insert into public.drop_posts (organization_id, title, top_colours, bottom_colours, created_by) values ($1, 'x', $2, $2, $3)", [ORG_N, COLOURS, U.dana])).toMatch(/row-level security/);
+      });
+    });
+  });
 });
