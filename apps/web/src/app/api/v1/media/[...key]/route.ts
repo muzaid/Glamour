@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { runtime } from "@/server/runtime";
+import { pullState, runtime } from "@/server/runtime";
 
 /** Short-lived signed download for private media (render outputs). */
 export async function GET(req: Request, { params }: { params: Promise<{ key: string[] }> }) {
@@ -7,6 +7,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ key: str
   const key = parts.join("/");
   const u = new URL(req.url);
   const rt = runtime();
+  await pullState();
   if (!rt.media.verifyDownload(key, u.searchParams.get("exp") ?? "", u.searchParams.get("sig") ?? "")) {
     return NextResponse.json({ error: { code: "NOT_FOUND", message: "Link expired or invalid", requestId: "", details: {} } }, { status: 404 });
   }

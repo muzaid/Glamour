@@ -15,3 +15,4 @@ export * from "./renders";
 export * from "./seed";
 export * from "./runway";
 export * from "./drops";
+export * from "./sync";

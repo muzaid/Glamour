@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { runtime, DEMO_MODE } from "@/server/runtime";
+import { sandboxSession, DEMO_MODE } from "@/server/runtime";
 import { formatMoney } from "@glamotion/core";
 import { SandboxPay } from "@/components/SandboxPay";
 
@@ -8,7 +8,7 @@ export const metadata = { title: "Sandbox payment" };
 /** Simulated hosted payment page (stands in for the processor's checkout). */
 export default async function SandboxCheckout({ searchParams }: { searchParams: Promise<{ session?: string }> }) {
   const { session } = await searchParams;
-  const s = session ? runtime().payments.session(session) : null;
+  const s = session ? await sandboxSession(session) : null;
   if (!DEMO_MODE || !s || !session) notFound();
   return (
     <div className="gm-container gm-section" style={{ maxWidth: 560 }}>

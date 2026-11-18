@@ -2,7 +2,7 @@ import "server-only";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { AppError, toErrorBody, type Ctx } from "@glamotion/core";
-import { ctx as makeCtx } from "./runtime";
+import { ctx as makeCtx, flushState } from "./runtime";
 
 type Handler<P> = (c: Ctx, req: Request, params: P) => Promise<unknown> | unknown;
 
@@ -17,6 +17,8 @@ export function api<P = Record<string, string>>(fn: Handler<P>, opts: { status?:
     try {
       if (req.method !== "GET" && req.method !== "HEAD") assertSameOrigin(req);
       const result = await fn(c, req, (await routeCtx.params) as P);
+      // Persist before responding so the next request (possibly on another instance) sees the change.
+      await flushState();
       if (result instanceof Response) return result;
       return NextResponse.json(result ?? { ok: true }, { status: opts.status ?? 200, headers: { "x-request-id": c.requestId } });
     } catch (e) {
