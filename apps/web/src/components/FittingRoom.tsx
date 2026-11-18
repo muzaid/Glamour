@@ -3,7 +3,8 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { compareSizes, type ApparelCategory } from "@glamotion/contracts";
 import { BUILTIN_ASSETS, GARMENT_ASSET } from "@glamotion/motion";
-import { outfitSvg, SKIN_TONES, type SkinTone } from "@glamotion/tryon";
+import { pickOnModelPhoto } from "@glamotion/tryon";
+import { MODEL_CREDIT, ON_MODEL_PHOTOS } from "./onModelPhotos";
 import type { GarmentProduct } from "./ApparelStudio";
 import { apiFetch, money } from "./client";
 
@@ -20,9 +21,10 @@ function thumb(category: ApparelCategory, hex: string, size = 110) {
 }
 
 /**
- * Spatial fitting room: the illustrated figure wears the selected outfit while
- * garment cards orbit left and right. Uses the same anchor-based fit as the
- * camera mirror; "Try on me" hands the selection to the on-device mirror.
+ * Spatial fitting room: a photographed model wears the selected outfit while
+ * garment cards orbit left and right. Photos are matched to the outfit; when a
+ * combination has no photo yet, the closest one is shown with a note.
+ * "Try on me" hands the selection to the on-device camera/photo mirror.
  */
 export function FittingRoom({ products, signedIn }: { products: GarmentProduct[]; signedIn: boolean }) {
   const [tab, setTab] = useState<Tab>("all");
@@ -34,7 +36,6 @@ export function FittingRoom({ products, signedIn }: { products: GarmentProduct[]
   const [worn, setWorn] = useState<{ base?: Worn; outer?: Worn }>(() => {
     return starter && starter.category !== "outerwear" ? { base: { productId: starter.productId, colour: starter.variants[0]!.colour } } : {};
   });
-  const [skin, setSkin] = useState<SkinTone>("honey");
   const [msg, setMsg] = useState<{ tone: "ok" | "error"; text: React.ReactNode } | null>(null);
   const byId = useMemo(() => new Map(products.map((p) => [p.productId, p])), [products]);
 
@@ -66,12 +67,8 @@ export function FittingRoom({ products, signedIn }: { products: GarmentProduct[]
     return () => window.removeEventListener("keydown", onKey);
   });
 
-  const layers = (["base", "outer"] as const).flatMap((slot) => {
-    const w = worn[slot]; const p = w && byId.get(w.productId);
-    const hex = p?.variants.find((v) => v.colour === w!.colour)?.hex;
-    return p && hex ? [{ category: p.category, hex }] : [];
-  });
-  const svg = useMemo(() => outfitSvg(layers, { skin, background: false, label: `Illustrated figure wearing ${layers.length} selected item${layers.length === 1 ? "" : "s"}` }), [JSON.stringify(layers), skin]); // eslint-disable-line react-hooks/exhaustive-deps
+  const item = (w?: Worn) => { const p = w && byId.get(w.productId); return p ? { slug: p.slug, colour: w!.colour, title: p.title } : undefined; };
+  const pick = pickOnModelPhoto(ON_MODEL_PHOTOS, { base: item(worn.base), outer: item(worn.outer) });
 
   if (!focus) return <p className="gm-muted">No clothing is published yet.</p>;
   const colours = [...new Map(focus.variants.map((v) => [v.colour, v.hex])).entries()];
@@ -110,7 +107,12 @@ export function FittingRoom({ products, signedIn }: { products: GarmentProduct[]
       </div>
       <div className="gm-fit-word" aria-hidden="true">FIT</div>
       <div className="gm-fit-stage">
-        <div className="gm-fit-figure" key={`${worn.base?.productId}${worn.base?.colour}${worn.outer?.productId}${worn.outer?.colour}${skin}`} dangerouslySetInnerHTML={{ __html: svg }} data-testid="fit-figure" />
+        {pick && (
+          <div className="gm-fit-figure" key={pick.photo.id} data-testid="fit-figure" data-photo={pick.photo.id} data-exact={pick.exact ? "true" : "false"}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={pick.photo.src} alt={pick.photo.alt} width={832} height={1248} decoding="async" />
+          </div>
+        )}
         {slots.map((o) => {
           const card = cards[(focusIndex + o + n * 3) % n]!;
           const d = Math.abs(o), sign = Math.sign(o);
@@ -131,11 +133,7 @@ export function FittingRoom({ products, signedIn }: { products: GarmentProduct[]
       </div>
       <div className="gm-fit-tones">
         <button className="gm-fit-arrow" onClick={() => step(-1)} aria-label="Previous item">‹</button>
-        <span role="radiogroup" aria-label="Figure skin tone" className="gm-row" style={{ gap: 8 }}>
-          {(Object.keys(SKIN_TONES) as SkinTone[]).map((t) => (
-            <button key={t} role="radio" aria-checked={skin === t} aria-label={`${t} tone`} className="gm-fit-tone" style={{ background: SKIN_TONES[t][0] }} onClick={() => setSkin(t)} />
-          ))}
-        </span>
+        {pick?.note && <span className="gm-fit-photo-note" role="status" data-testid="fit-photo-note">{pick.note}</span>}
         <button className="gm-fit-arrow" onClick={() => step(1)} aria-label="Next item">›</button>
       </div>
       <section className="gm-fit-bar" aria-label="Selected item">
@@ -164,7 +162,7 @@ export function FittingRoom({ products, signedIn }: { products: GarmentProduct[]
         </div>
       </section>
       {msg && <div className={`gm-alert gm-alert-${msg.tone} gm-fit-msg`} role="status">{msg.text}</div>}
-      <p className="gm-fit-note">Illustrated figure · 2D preview, not a fit prediction</p>
+      <p className="gm-fit-note">{MODEL_CREDIT} Model wears size S.</p>
     </div>
   );
 }

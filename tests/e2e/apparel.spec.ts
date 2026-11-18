@@ -43,16 +43,18 @@ test("cloud try-on endpoint refuses without a configured provider and never acce
   expect(anon.status()).toBe(401);
 });
 
-test("fitting room: spatial carousel dresses the figure, layers outerwear, adds the chosen size to the bag", async ({ page }) => {
+test("fitting room: photographed model changes outfit from the carousel, layers outerwear, adds the chosen size to the bag", async ({ page }) => {
   await signIn(page, "bea");
   await page.goto("/fitting-room");
   const figure = page.getByTestId("fit-figure");
-  await expect(figure.locator('[data-layer="top"]')).toHaveCount(1);
+  await expect(figure).toHaveAttribute("data-photo", "top-ivory");
+  await expect(figure.locator("img")).toHaveJSProperty("complete", true);
+  expect(await figure.locator("img").evaluate((i: HTMLImageElement) => i.naturalWidth)).toBeGreaterThan(500);
   await shot(page, "16-fitting-room");
   await page.getByTestId("fit-tab-outerwear").click();
   await page.getByTestId("fit-card-tailored-wool-blazer-Charcoal").click();
-  await expect(figure.locator('[data-layer="outerwear"]')).toHaveCount(1);
-  await expect(figure.locator('[data-layer="top"]')).toHaveCount(1); // blazer layers over the top
+  await expect(figure).toHaveAttribute("data-photo", "blazer-charcoal");
+  await expect(figure).toHaveAttribute("data-exact", "true");
   await expect(page.getByTestId("fit-title")).toHaveText("Tailored Wool Blazer");
   await page.getByTestId("fit-size-M").click();
   await page.getByTestId("fit-add").click();
@@ -60,8 +62,9 @@ test("fitting room: spatial carousel dresses the figure, layers outerwear, adds 
   await shot(page, "17-fitting-room-layered");
   await page.getByTestId("fit-tab-dress").click();
   await page.getByTestId("fit-card-satin-slip-dress-Emerald").click();
-  await expect(figure.locator('[data-layer="dress"]')).toHaveCount(1);
-  await expect(figure.locator('[data-layer="outerwear"]')).toHaveCount(0); // a dress is worn alone
-  await page.keyboard.press("ArrowRight");
-  await expect(page.getByTestId("fit-title")).toHaveText("Satin Slip Dress");
+  await expect(figure).toHaveAttribute("data-photo", "dress-emerald");
+  // A colour without its own photo falls back to the closest photo with an honest note.
+  await page.getByTestId("fit-colour-Champagne").click();
+  await expect(figure).toHaveAttribute("data-exact", "false");
+  await expect(page.getByTestId("fit-photo-note")).toContainText("no Champagne photo yet");
 });

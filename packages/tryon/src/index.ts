@@ -8,3 +8,4 @@ export * from "./demo-face";
 export * from "./apparel";
 export * from "./demo-body";
 export * from "./outfit";
+export * from "./on-model";

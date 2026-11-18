@@ -85,3 +85,28 @@ describe("outfitSvg (fitting room renderer)", () => {
     expect(s).not.toContain("<b>");
   });
 });
+
+import { pickOnModelPhoto, type OnModelPhoto } from "./on-model";
+describe("pickOnModelPhoto", () => {
+  const photos: OnModelPhoto[] = [
+    { id: "top-ivory", src: "a", alt: "", base: { slug: "top", colour: "Ivory" } },
+    { id: "top-blush", src: "b", alt: "", base: { slug: "top", colour: "Blush" } },
+    { id: "blazer-charcoal", src: "c", alt: "", base: { slug: "top", colour: "Ivory" }, outer: { slug: "blazer", colour: "Charcoal" } },
+    { id: "dress-emerald", src: "d", alt: "", base: { slug: "dress", colour: "Emerald" } },
+  ];
+  it("returns exact matches without a note", () => {
+    expect(pickOnModelPhoto(photos, { base: { slug: "top", colour: "Blush" } })).toMatchObject({ exact: true, note: null, photo: { id: "top-blush" } });
+    expect(pickOnModelPhoto(photos, { base: { slug: "top", colour: "Ivory" }, outer: { slug: "blazer", colour: "Charcoal" } })!.photo.id).toBe("blazer-charcoal");
+  });
+  it("falls back to the closest photo and says what differs", () => {
+    const r = pickOnModelPhoto(photos, { base: { slug: "top", colour: "Noir", title: "Silk Shell Top" } })!;
+    expect(r.exact).toBe(false);
+    expect(r.note).toContain("shown in");
+    const layered = pickOnModelPhoto(photos, { base: { slug: "top", colour: "Blush" }, outer: { slug: "blazer", colour: "Charcoal" } })!;
+    expect(layered.photo.id).toBe("blazer-charcoal");
+    expect(layered.note).toContain("Blush");
+  });
+  it("prefers an un-layered photo when no outer layer is worn", () => {
+    expect(pickOnModelPhoto(photos, { base: { slug: "top", colour: "Ivory" } })!.photo.id).toBe("top-ivory");
+  });
+});
